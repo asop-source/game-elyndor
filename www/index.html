@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>Elyndor</title>
+<meta name="theme-color" content="#17231C">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Fredoka:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="errBox" style="display:none;position:absolute;left:8px;right:8px;top:56px;z-index:999;background:#3a0f0a;border:2px solid #ff8a6a;color:#ffe;border-radius:12px;padding:10px 12px;font:13px/1.4 system-ui,sans-serif;white-space:pre-wrap;word-break:break-word"></div>
+<script>
+window.__showErr=function(m){try{var b=document.getElementById('errBox');if(!b)return;if(b.childNodes.length>6)return;b.style.display='block';var d=document.createElement('div');d.textContent='Error: '+m;b.appendChild(d);}catch(e){}};
+window.addEventListener('error',function(e){window.__showErr((e.message||'unknown')+(e.lineno?' (baris '+e.lineno+')':''));});
+window.addEventListener('unhandledrejection',function(e){var r=e.reason;window.__showErr('promise: '+((r&&(r.code||r.message))||String(r)));});
+</script>
+<div id="app">
+
+<div id="login">
+  <svg class="crest" viewBox="0 0 120 120" aria-hidden="true">
+    <path d="M60 8 L104 26 V60 C104 86 84 104 60 112 C36 104 16 86 16 60 V26 Z" fill="#8B5E34" stroke="#F0B541" stroke-width="4"/>
+    <path d="M38 72 C44 50 56 40 76 36 C70 44 72 50 80 54 C70 58 66 66 68 78 C60 70 50 70 38 72 Z" fill="#C9482F"/>
+    <circle cx="70" cy="46" r="3" fill="#F0B541"/>
+    <path d="M44 86 H76" stroke="#F4E7C8" stroke-width="4" stroke-linecap="round"/>
+  </svg>
+  <h1>Elyndor</h1>
+  <p>Naga Vaelgorn telah bangun dan dunia retak. Tulis nama Perantau-mu dan bergabunglah dengan yang lain.</p>
+  <input id="nameInput" maxlength="16" placeholder="Nama karaktermu" autocomplete="off" autocapitalize="off" spellcheck="false">
+  <button id="enterBtn">Masuk ke Elyndor</button>
+  <div id="loginMsg"></div>
+  <small>Nama yang sama akan melanjutkan karakter yang sama.<br>Setelah masuk, putar HP-mu ke posisi mendatar 📱↔️</small>
+</div>
+
+<div id="game">
+  <canvas id="cv"></canvas>
+  <div id="hud">
+    <div class="pcard">
+      <div class="row"><div class="pname" id="hName">-</div><div class="lv" id="hLv">Lv 1</div></div>
+      <div class="bar"><i id="hHp" style="background:var(--hp);width:100%"></i><span id="hHpT"></span></div>
+      <div class="bar" style="height:7px"><i id="hXp" style="background:var(--xp);width:0"></i></div>
+      <div class="coins" id="hCoin">0 koin</div>
+    </div>
+    <div id="quest"></div>
+  </div>
+  <div id="menu">
+    <button class="mbtn" id="mSkill">⚔️<small>Skill</small></button>
+    <button class="mbtn" id="mQuest">📜<small>Quest</small></button>
+    <button class="mbtn" id="mMap">🗺️<small>Peta</small></button>
+    <button class="mbtn" id="mRank">🏆<small>Top</small></button>
+    <button class="mbtn" id="mPeople">👥<small id="mPeopleN">Online</small></button>
+    <button class="mbtn" id="mEmo">😊<small>Emote</small></button>
+    <button class="mbtn" id="mBot">🤖<small>Bot</small></button>
+    <button class="mbtn" id="mSnd"><span id="mSndI">🔊</span><small>Suara</small></button>
+    <button class="mbtn" id="mSet">⚙️<small>Atur</small></button>
+  </div>
+  <div id="bossbar"><div class="t">Vaelgorn, Naga Purba</div><div class="bar"><i id="bossHp" style="background:#E0503C;width:100%"></i></div></div>
+  <div id="banner"><h2 id="bnT"></h2><p id="bnS"></p></div>
+  <div id="actions">
+    <button class="abtn" id="bPot" aria-label="Minum ramuan">🧪<span class="cnt" id="potN">3</span><div class="cd" id="potCd"></div></button>
+    <button class="abtn sup" id="sup0" aria-label="Skill pendukung 1"></button>
+    <button class="abtn sup" id="sup1" aria-label="Skill pendukung 2"></button>
+    <button class="abtn" id="bSkill" aria-label="Jurus elemen"><span id="skIc">🔥</span><div class="cd" id="skCd"></div><div class="cdn" id="skCdn"></div></button>
+    <button class="abtn" id="bAtk" aria-label="Serang"><span id="atkIc">🗡️</span><small id="atkLb">Serang</small></button>
+  </div>
+  <div id="toast"></div>
+</div>
+<div id="genpick">
+  <h1>Pilih Karaktermu</h1>
+  <p>Perantau ini akan tampil sebagai laki-laki atau perempuan untuk seumur hidup petualangannya.</p>
+  <div class="gengrid" id="gengrid"></div>
+</div>
+<div id="elpick">
+  <h1>Pilih Elemenmu</h1>
+  <p>Setiap Perantau memilih satu elemen untuk seumur hidup petualangannya. Elemen ini menjadi jurus andalanmu.</p>
+  <div class="elgrid" id="elgrid"></div>
+</div>
+
+<div id="sheet"><div class="sheet">
+  <div class="shead"><h2 id="sTitle"></h2><button id="sClose" aria-label="Tutup">✕</button></div>
+  <div id="sBody"></div>
+</div></div>
+
+</div>
+<script src="claude-shim.js"></script>
+<script src="game.js"></script>
+<script>
+if("serviceWorker" in navigator && /^https?:$/.test(location.protocol)){ window.addEventListener("load",function(){ navigator.serviceWorker.register("sw.js").catch(function(){}); }); }
+</script>
+</body>
+</html>

@@ -1,0 +1,8 @@
+{
+  "appId": "com.elyndor.game",
+  "appName": "Elyndor",
+  "webDir": "www",
+  "server": {
+    "androidScheme": "https"
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "name": "elyndor",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Elyndor: game petualangan fantasi Nusantara (web/PWA/APK)",
+  "scripts": {
+    "start": "npx --yes serve www -l 8080",
+    "cap:add": "cap add android",
+    "cap:sync": "cap sync android",
+    "cap:open": "cap open android",
+    "apk": "cap sync android && cd android && ./gradlew assembleDebug"
+  },
+  "dependencies": {
+    "@capacitor/android": "^6.0.0",
+    "@capacitor/core": "^6.0.0"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^6.0.0"
+  }
+}
