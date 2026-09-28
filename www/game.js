@@ -150,9 +150,8 @@ function isPortraitScreen(){
 }
 function applyLayout(){
   var app=$('app'); if(!app) return; var v=vsize();
-  var ae=document.activeElement, typing=!!(ae&&(ae.tagName==='INPUT'||ae.tagName==='TEXTAREA'));
   var lg=$('login'), inLogin=!!(lg&&lg.style.display!=='none');
-  var forced=isPortraitScreen() && v.w<=v.h*1.25 && !typing && !inLogin;
+  var forced=isPortraitScreen() && v.w<=v.h*1.25 && !inLogin;
   LAND.forced=forced; document.body.classList.toggle('lsforce',forced);
   if(forced){
     app.style.width=v.h+'px'; app.style.height=v.w+'px';
@@ -1810,7 +1809,7 @@ function spawnBots(names){
     if(totalBots()>=cap) return;
     var a=Math.random()*6.28, r=30+Math.random()*room;
     var x=clamp(P.x+Math.cos(a)*r,40,zone.w-40), y=clamp(P.y+Math.sin(a)*r,40,zone.h-40);
-    bots[zoneId].push({name:n,x:x,y:y,hx:x,hy:y,tx:x,ty:y,wt:0,walk:0,f:0,moving:false,eT:1.2,hp:50,maxHp:50,atk:6+Math.floor(Math.random()*4),atkCd:0});
+    bots[zoneId].push({name:n,x:x,y:y,hx:x,hy:y,tx:x,ty:y,wt:0,walk:0,f:0,moving:false,eT:1.2,hp:220,maxHp:220,atk:14+Math.floor(Math.random()*6),atkCd:0});
     added++;
   });
   return added;
