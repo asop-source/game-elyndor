@@ -539,7 +539,7 @@ $('enterBtn').addEventListener('click',login);
 $('nameInput').addEventListener('keydown',function(e){if(e.key==='Enter')login();});
 
 function freshPlayer(name){
-  return {name:name,zone:'village',x:650,y:600,hp:60,level:1,xp:0,coins:0,potions:3,q:0,qa:false,qp:0,chests:[],visited:['village'],kills:0,hero:false,skills:{},element:'',gender:'',slots:[],v3:true,sq:0,sqa:false,sqp:0};
+  return {name:name,zone:'village',x:650,y:600,hp:60,level:1,xp:0,coins:0,potions:3,q:0,qa:false,qp:0,chests:[],visited:['village'],kills:0,hero:false,skills:{},element:'',gender:'',design:0,slots:[],v3:true,sq:0,sqa:false,sqp:0};
 }
 var GENDERS=[
  {id:'m',ic:'♂️',name:'Laki-laki'},
@@ -557,6 +557,26 @@ function showGenderPicker(cb){
   });
   $('genpick').classList.add('show');
 }
+var DESIGNS=[
+ {id:0,ic:'🙂',name:'Klasik'},
+ {id:1,ic:'🥷',name:'Ikat Kepala'},
+ {id:2,ic:'👒',name:'Caping Petani'},
+ {id:3,ic:'🧢',name:'Peci'},
+ {id:4,ic:'👑',name:'Mahkota'}
+];
+function isDesign(d){ return typeof d==='number' && d>=0 && d<DESIGNS.length; }
+function showDesignPicker(cb){
+  $('login').style.display='none';
+  var grid=$('desgrid'); grid.innerHTML='';
+  DESIGNS.forEach(function(dz){
+    var b=document.createElement('button'); b.className='descard';
+    b.innerHTML='<div class="ic">'+dz.ic+'</div><b>'+dz.name+'</b>';
+    b.addEventListener('click',function(){ $('despick').classList.remove('show'); cb(dz.id); });
+    grid.appendChild(b);
+  });
+  $('despick').classList.add('show');
+}
+function designFor(s){ var h=0; for(var i=0;i<s.length;i++) h=(h*31+s.charCodeAt(i))>>>0; return h%DESIGNS.length; }
 function showElementPicker(cb){
   $('login').style.display='none';
   var grid=$('elgrid'); grid.innerHTML='';
@@ -608,7 +628,7 @@ function login(){
         P=freshPlayer(name);
         pickNewCharacter(function(){
           myRef.set(serialize()).then(function(){startGame('Karakter baru dibuat. Selamat datang, '+name+'!');})
-          .catch(function(e){ if(e&&e.code==='invalid_argument'){ fail('Akunmu hanya bisa melihat, belum bisa menyimpan karakter. Minta pemilik game memberi akses Contributor.'); $('elpick').classList.remove('show'); $('genpick').classList.remove('show'); $('login').style.display='flex'; } else { $('elpick').classList.remove('show'); $('genpick').classList.remove('show'); $('login').style.display='flex'; fail('Gagal membuat karakter ('+((e&&e.code)||'error')+'). Coba lagi.'); } });
+          .catch(function(e){ if(e&&e.code==='invalid_argument'){ fail('Akunmu hanya bisa melihat, belum bisa menyimpan karakter. Minta pemilik game memberi akses Contributor.'); $('elpick').classList.remove('show'); $('genpick').classList.remove('show'); $('despick').classList.remove('show'); $('login').style.display='flex'; } else { $('elpick').classList.remove('show'); $('genpick').classList.remove('show'); $('despick').classList.remove('show'); $('login').style.display='flex'; fail('Gagal membuat karakter ('+((e&&e.code)||'error')+'). Coba lagi.'); } });
         });
       }
     });
@@ -618,7 +638,7 @@ function login(){
   });
 }
 function pickNewCharacter(done){
-  showGenderPicker(function(g){ P.gender=g; showElementPicker(function(el){ P.element=el; P.skills[el]=1; done(); }); });
+  showGenderPicker(function(g){ P.gender=g; showDesignPicker(function(dz){ P.design=dz; showElementPicker(function(el){ P.element=el; P.skills[el]=1; done(); }); }); });
 }
 function pickMissing(needG,needE,done){
   var afterG=function(){ if(needE) showElementPicker(function(el){ P.element=el; if(!P.skills[el]) P.skills[el]=1; done(); }); else done(); };
@@ -699,7 +719,7 @@ function enterZone(id,fromId,keepPos){
 /* ===================== NETWORK ===================== */
 function serialize(){
   return {name:P.name,zone:P.zone,x:Math.round(P.x),y:Math.round(P.y),hp:Math.round(P.hp),level:P.level,xp:P.xp,coins:P.coins,
-    potions:P.potions,skills:P.skills,element:P.element,gender:P.gender,slots:P.slots,v3:true,sq:P.sq,sqa:P.sqa,sqp:P.sqp,q:P.q,qa:P.qa,qp:P.qp,chests:P.chests,visited:P.visited,kills:P.kills,hero:!!P.hero};
+    potions:P.potions,skills:P.skills,element:P.element,gender:P.gender,design:P.design,slots:P.slots,v3:true,sq:P.sq,sqa:P.sqa,sqp:P.sqp,q:P.q,qa:P.qa,qp:P.qp,chests:P.chests,visited:P.visited,kills:P.kills,hero:!!P.hero};
 }
 function save(force){
   if(offline||!myRef) return;
@@ -711,7 +731,7 @@ function save(force){
 }
 function sendPresence(force){
   if(!room) return;
-  var pr={n:P.name,z:zoneId,x:Math.round(P.x),y:Math.round(P.y),f:Math.round(P.f*100)/100||0,w:(input.jx||input.jy)?1:0,at:atkCount,lv:P.level,hp:Math.round(P.hp),mh:stats().maxHp,e:P.e||'',et:P.et||0,hero:P.hero?1:0,ak:atkKind,sn:skillSeq,g:P.gender||'m',el:P.element||''};
+  var pr={n:P.name,z:zoneId,x:Math.round(P.x),y:Math.round(P.y),f:Math.round(P.f*100)/100||0,w:(input.jx||input.jy)?1:0,at:atkCount,lv:P.level,hp:Math.round(P.hp),mh:stats().maxHp,e:P.e||'',et:P.et||0,hero:P.hero?1:0,ak:atkKind,sn:skillSeq,g:P.gender||'m',el:P.element||'',ds:isDesign(P.design)?P.design:0};
   if(lastSkill){ pr.sk=lastSkill.sk; pr.sa=lastSkill.sa; pr.sx=lastSkill.sx; pr.sy=lastSkill.sy; }
   if(lastPvp){ pr.pvS=lastPvp.s; pr.pvT=lastPvp.t; pr.pvD=lastPvp.d; }
   var s=JSON.stringify(pr); if(!force && s===lastPres) return; lastPres=s;
@@ -729,7 +749,7 @@ function onPeers(list){
     allPeers[k]={n:pr.n.slice(0,16),z:pr.z,lv:+pr.lv||1};
     if(!o){ o=peers[k]={x:+pr.x||0,y:+pr.y||0,walk:0,atkT:0,eT:0}; }
     o.n=pr.n.slice(0,16); o.tx=+pr.x||0; o.ty=+pr.y||0; o.f=+pr.f||0; o.w=!!pr.w; o.lv=+pr.lv||1; o.hp=+pr.hp||0; o.mh=Math.max(1,+pr.mh||1); o.hero=!!pr.hero;
-    o.g=isGender(pr.g)?pr.g:'m'; o.el=ELM[pr.el]?pr.el:'';
+    o.g=isGender(pr.g)?pr.g:'m'; o.el=ELM[pr.el]?pr.el:''; o.ds=isDesign(pr.ds)?pr.ds:0;
     if(o.lastAt!==undefined && pr.at!==o.lastAt){ o.atkT=0.25; o.ak=(+pr.ak||0)%3; } o.lastAt=pr.at;
     if(o.lastSn!==undefined && pr.sn!==o.lastSn && SKFX[pr.sk]){ var sa=+pr.sa||0; o.f=sa; SKFX[pr.sk](o,sa,{x:+pr.sx||o.x,y:+pr.sy||o.y},false); sfx('sk_'+pr.sk,clamp(1-dist(P.x,P.y,o.x,o.y)/600,0,0.4)); } o.lastSn=pr.sn;
     if(pr.e && ALLOWED_EMO.indexOf(pr.e)>=0 && pr.et!==o.et){ if(o.et!==undefined) o.eT=2.6; o.e=pr.e; o.et=pr.et; }
@@ -1215,12 +1235,12 @@ function draw(){
   zone.npcs.forEach(function(n){ if(vis(n)) list.push({y:n.y,f:function(){drawNpc(n,t);}}); });
   (monsters[zoneId]||[]).forEach(function(m){ if(!m.dead&&vis(m)) list.push({y:m.y,f:function(){drawMonster(m,t);}}); });
   (bots[zoneId]||[]).forEach(function(b){ if(vis(b)) list.push({y:b.y,f:function(){
-    drawHero(b.x,b.y,b.f,b.moving?b.walk:0,0,colorFor(b.name),false,b.name,0,b.hp,b.maxHp,0,false,{gender:genderFor(b.name)});
+    drawHero(b.x,b.y,b.f,b.moving?b.walk:0,0,colorFor(b.name),false,b.name,0,b.hp,b.maxHp,0,false,{gender:genderFor(b.name),design:designFor(b.name)});
     if(b.eT>0) bubble(b.x,b.y-78,'👋',b.eT); }}); });
   Object.keys(peers).forEach(function(k){ var o=peers[k]; if(vis(o)) list.push({y:o.y,f:function(){
-    drawHero(o.x,o.y,o.f,o.moving?o.walk:0,o.atkT,(o.el&&ELM[o.el])?ELM[o.el].c:colorFor(o.n),false,o.n,o.lv,o.hp,o.mh,0,o.hero,{kind:o.ak||0,spin:o.spinT>0?o.spinA+(1-o.spinT/0.5)*12.56:null,shield:o.shieldT,gender:o.g});
+    drawHero(o.x,o.y,o.f,o.moving?o.walk:0,o.atkT,(o.el&&ELM[o.el])?ELM[o.el].c:colorFor(o.n),false,o.n,o.lv,o.hp,o.mh,0,o.hero,{kind:o.ak||0,spin:o.spinT>0?o.spinA+(1-o.spinT/0.5)*12.56:null,shield:o.shieldT,gender:o.g,design:o.ds});
     if(o.eT>0) bubble(o.x,o.y-78,o.e,o.eT); }}); });
-  if(!P.dead) list.push({y:P.y,f:function(){ var S=stats(); drawHero(P.x,P.y,P.f,P.walking?walkT:0,atkT,elDef().c,true,P.name,P.level,P.hp,S.maxHp,hurtT,P.hero,{kind:atkKind,spin:P.spinT>0?P.spinA+(1-P.spinT/0.5)*12.56:null,shield:P.shieldT,dash:P.dashT>0,gender:P.gender}); if(emoteT>0) bubble(P.x,P.y-78,P.e,emoteT); }});
+  if(!P.dead) list.push({y:P.y,f:function(){ var S=stats(); drawHero(P.x,P.y,P.f,P.walking?walkT:0,atkT,elDef().c,true,P.name,P.level,P.hp,S.maxHp,hurtT,P.hero,{kind:atkKind,spin:P.spinT>0?P.spinA+(1-P.spinT/0.5)*12.56:null,shield:P.shieldT,dash:P.dashT>0,gender:P.gender,design:P.design}); if(emoteT>0) bubble(P.x,P.y-78,P.e,emoteT); }});
   ghosts.forEach(function(g){ ctx.globalAlpha=Math.max(0,g.life/g.max)*0.45; drawHero(g.x,g.y,g.f,0,0,g.c,false,'',0,1,1,0,false,{ghost:true}); }); ctx.globalAlpha=1;
   list.sort(function(a,b){return a.y-b.y;}); list.forEach(function(o){o.f();});
   projs.forEach(drawProj);
@@ -1306,6 +1326,20 @@ function drawHero(x,y,f,wt,at,tunic,isMe,name,lv,hp,mh,hurt,hero,opt){
     ctx.fillStyle='#E85D8A'; ctx.beginPath(); ctx.arc(-8,-27,2.4,0,6.3); ctx.fill();
   } else {
     ctx.fillStyle=hairC; ctx.beginPath(); ctx.arc(0,-22,11.5,Math.PI*1.05,Math.PI*1.95); ctx.fill();
+  }
+  if(opt.design===1){
+    ctx.strokeStyle='#C23B2C'; ctx.lineWidth=4; ctx.beginPath(); ctx.arc(0,-21,11.5,Math.PI*1.08,Math.PI*1.92); ctx.stroke();
+    ctx.fillStyle='#C23B2C'; ctx.fillRect(8,-26,5,3); ctx.fillRect(8,-21,5,3);
+  } else if(opt.design===2){
+    ctx.fillStyle='#D9B463'; ctx.strokeStyle='#8a6a30'; ctx.lineWidth=1.5;
+    ctx.beginPath(); ctx.moveTo(-19,-27); ctx.quadraticCurveTo(0,-42,19,-27); ctx.quadraticCurveTo(0,-33,-19,-27); ctx.closePath(); ctx.fill(); ctx.stroke();
+    ctx.fillStyle='#5a3a10'; ctx.beginPath(); ctx.arc(0,-30,2.2,0,6.3); ctx.fill();
+  } else if(opt.design===3){
+    ctx.fillStyle='#1C1C1C'; rr(ctx,-9,-33,18,10,3); ctx.fill();
+  } else if(opt.design===4){
+    ctx.fillStyle='#E8C34A';
+    ctx.beginPath(); ctx.moveTo(-10,-29); ctx.lineTo(-10,-23); ctx.lineTo(-4,-30); ctx.lineTo(0,-23); ctx.lineTo(4,-30); ctx.lineTo(10,-23); ctx.lineTo(10,-29); ctx.closePath(); ctx.fill();
+    ctx.fillStyle='#C23B2C'; ctx.beginPath(); ctx.arc(0,-27,2,0,6.3); ctx.fill();
   }
   if(!up){ ctx.fillStyle='#2B1D12'; var ex=fx*3.5; ctx.beginPath(); ctx.arc(-4+ex,-19,1.8,0,6.3); ctx.arc(4+ex,-19,1.8,0,6.3); ctx.fill();
     ctx.fillStyle='rgba(230,110,110,.45)'; ctx.beginPath(); ctx.arc(-7+ex,-15,2.2,0,6.3); ctx.arc(7+ex,-15,2.2,0,6.3); ctx.fill(); }
