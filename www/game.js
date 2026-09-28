@@ -823,8 +823,30 @@ function swing(){
     pvpHit(o,dmg,crit,a); hit=true;
     impact(o.x-Math.cos(a)*10,o.y-8-Math.sin(a)*10,crit);
   });
+  (bots[zoneId]||[]).slice().forEach(function(b){
+    var d=dist(P.x,P.y,b.x,b.y);
+    if(d>reach+14) return;
+    var a=Math.atan2(b.y-P.y,b.x-P.x), diff=Math.abs(((a-P.f)+Math.PI*3)%(Math.PI*2)-Math.PI);
+    if(diff>(combo===2?0.8:1.4) && d>14+14) return;
+    var crit=Math.random()<S.crit, dmg=Math.round(S.atk*mult*(0.85+Math.random()*0.3)*(crit?1.9:1));
+    hurtBot(b,dmg,crit,a); hit=true;
+    impact(b.x-Math.cos(a)*10,b.y-8-Math.sin(a)*10,crit);
+  });
   if(hit) shake(combo===2?5:2.5,0.14);
   sendPresence();
+}
+function hurtBot(b,dmg,crit,a){
+  b.hp-=dmg; sfx(crit?'crit':'hit');
+  floaters.push({x:b.x+(Math.random()-.5)*16,y:b.y-34,t:crit?dmg+'!':String(dmg),c:crit?'#FFD34A':'#FFFFFF',life:.9,s:crit?20:15});
+  if(b.hp<=0) killBot(b);
+}
+function killBot(b){
+  var arr=bots[zoneId]||[], i=arr.indexOf(b); if(i>=0) arr.splice(i,1);
+  for(var k=0;k<14;k++) particles.push({x:b.x,y:b.y,vx:(Math.random()-.5)*6,vy:(Math.random()-.5)*6-1,life:.6,max:.6,c:'#FFE08A',r:4});
+  shake(3,0.15); sfx('kill'); sfx('coin');
+  var coin=3+Math.floor(Math.random()*4); P.coins+=coin;
+  floaters.push({x:b.x,y:b.y-40,t:'+'+coin+' 🪙',c:'#FFD34A',life:1.2,s:15});
+  dirty=true; hud();
 }
 function pvpHit(o,dmg,crit,a){
   pvpSeq++; lastPvp={s:pvpSeq,t:o.n,d:dmg};
@@ -1102,7 +1124,28 @@ function update(dt){
   save(false);
   hudT-=dt; if(hudT<=0){hudT=0.1; hud(); actionUi();}
 }
+function nearestMonsterTo(x,y,range){
+  var best=null,bd=range; (monsters[zoneId]||[]).forEach(function(m){ if(m.dead) return; var d=dist(x,y,m.x,m.y)-MON[m.type].r; if(d<bd){bd=d;best=m;} }); return best;
+}
 function updBot(b,dt){
+  if(b.atkCd>0) b.atkCd-=dt;
+  var tgt=nearestMonsterTo(b.x,b.y,170);
+  if(tgt){
+    var T=MON[tgt.type], d=dist(b.x,b.y,tgt.x,tgt.y), reach=50;
+    b.f=Math.atan2(tgt.y-b.y,tgt.x-b.x);
+    if(d>reach+T.r){ b.x+=Math.cos(b.f)*70*dt; b.y+=Math.sin(b.f)*70*dt; b.walk+=dt; b.moving=true; collide(b,13); }
+    else {
+      b.moving=false;
+      if(!(b.atkCd>0)){
+        b.atkCd=0.9+Math.random()*0.5;
+        var dmg=Math.round((b.atk||6)*(0.85+Math.random()*0.3));
+        hurtMonster(tgt,dmg,false,b.f,4);
+        impact(tgt.x-Math.cos(b.f)*T.r*0.6,tgt.y-8-Math.sin(b.f)*T.r*0.6,false);
+      }
+    }
+    if(b.eT>0) b.eT-=dt;
+    return;
+  }
   b.wt-=dt;
   if(b.wt<=0){ b.wt=1.5+Math.random()*3; b.tx=clamp(b.hx+(Math.random()-.5)*220,40,zone.w-40); b.ty=clamp(b.hy+(Math.random()-.5)*220,40,zone.h-40); }
   var dx=b.tx-b.x, dy=b.ty-b.y, l=Math.sqrt(dx*dx+dy*dy);
@@ -1172,7 +1215,7 @@ function draw(){
   zone.npcs.forEach(function(n){ if(vis(n)) list.push({y:n.y,f:function(){drawNpc(n,t);}}); });
   (monsters[zoneId]||[]).forEach(function(m){ if(!m.dead&&vis(m)) list.push({y:m.y,f:function(){drawMonster(m,t);}}); });
   (bots[zoneId]||[]).forEach(function(b){ if(vis(b)) list.push({y:b.y,f:function(){
-    drawHero(b.x,b.y,b.f,b.moving?b.walk:0,0,colorFor(b.name),false,b.name,0,1,1,0,false,{gender:genderFor(b.name)});
+    drawHero(b.x,b.y,b.f,b.moving?b.walk:0,0,colorFor(b.name),false,b.name,0,b.hp,b.maxHp,0,false,{gender:genderFor(b.name)});
     if(b.eT>0) bubble(b.x,b.y-78,'👋',b.eT); }}); });
   Object.keys(peers).forEach(function(k){ var o=peers[k]; if(vis(o)) list.push({y:o.y,f:function(){
     drawHero(o.x,o.y,o.f,o.moving?o.walk:0,o.atkT,(o.el&&ELM[o.el])?ELM[o.el].c:colorFor(o.n),false,o.n,o.lv,o.hp,o.mh,0,o.hero,{kind:o.ak||0,spin:o.spinT>0?o.spinA+(1-o.spinT/0.5)*12.56:null,shield:o.shieldT,gender:o.g});
@@ -1733,7 +1776,7 @@ function spawnBots(names){
     if(totalBots()>=cap) return;
     var a=Math.random()*6.28, r=30+Math.random()*room;
     var x=clamp(P.x+Math.cos(a)*r,40,zone.w-40), y=clamp(P.y+Math.sin(a)*r,40,zone.h-40);
-    bots[zoneId].push({name:n,x:x,y:y,hx:x,hy:y,tx:x,ty:y,wt:0,walk:0,f:0,moving:false,eT:1.2});
+    bots[zoneId].push({name:n,x:x,y:y,hx:x,hy:y,tx:x,ty:y,wt:0,walk:0,f:0,moving:false,eT:1.2,hp:50,maxHp:50,atk:6+Math.floor(Math.random()*4),atkCd:0});
     added++;
   });
   return added;
@@ -1741,7 +1784,7 @@ function spawnBots(names){
 function ensureBots(id){ if(!bots[id]) bots[id]=[]; }
 function showBotPanel(){
   var n=(bots[zoneId]||[]).length;
-  var h='<div class="note">Tempel nama penonton TikTok live-mu (satu nama per baris, atau dipisah koma). Mereka akan muncul sebagai karakter yang berjalan-jalan di zona ini — sekadar hiasan visual, bukan pemain sungguhan, dan hanya terlihat di layarmu sendiri.</div>'+
+  var h='<div class="note">Tempel nama penonton TikTok live-mu (satu nama per baris, atau dipisah koma). Mereka akan muncul sebagai karakter yang berjalan-jalan di zona ini, ikut menyerang monster terdekat, dan bisa kamu pukul sampai mati (dapat koin) — bukan pemain sungguhan, dan hanya terlihat di layarmu sendiri.</div>'+
     '<textarea id="botTa" placeholder="contoh:\nbudi_87\nsiti.aminah\n@rafi_ganteng"></textarea>'+
     '<div class="botrow"><button class="gbtn" id="botAdd">Munculkan</button><button class="gbtn off" id="botClear" style="background:#d68a8a;color:#3a1010">Hapus bot di zona ini</button></div>'+
     '<div class="note">Bot di zona ini sekarang: '+n+' · Total semua zona: '+totalBots()+' (maks 80)</div>';
