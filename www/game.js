@@ -1286,6 +1286,11 @@ function drawHero(x,y,f,wt,at,tunic,isMe,name,lv,hp,mh,hurt,hero,opt){
   ctx.save(); ctx.translate(x,y-bob);
   if(isMe && hurt>0 && Math.floor(hurt*30)%2) ctx.globalAlpha=0.5;
   if(opt.dash){ ctx.rotate(Math.cos(f)*0.25); }
+  var BUILDS={0:{sx:1,sy:1},1:{sx:0.88,sy:1.02},2:{sx:1.16,sy:0.9},3:{sx:0.9,sy:1.14},4:{sx:1.14,sy:1.1}}, bs=BUILDS[opt.design]||BUILDS[0];
+  ctx.scale(bs.sx,bs.sy);
+  if(opt.design===4){
+    ctx.fillStyle='#7A1F1F'; ctx.beginPath(); ctx.moveTo(-10,-9); ctx.quadraticCurveTo(-18,10,-14,22); ctx.lineTo(14,22); ctx.quadraticCurveTo(18,10,10,-9); ctx.closePath(); ctx.fill();
+  }
   var drawSword=function(){
     ctx.save();
     if(opt.spin!=null){ var sa=opt.spin;
@@ -1314,6 +1319,10 @@ function drawHero(x,y,f,wt,at,tunic,isMe,name,lv,hp,mh,hurt,hero,opt){
   ctx.fillStyle='#4A3526'; rr(ctx,-8,4+leg*0.3,6,11,3); ctx.fill(); rr(ctx,2,4-leg*0.3,6,11,3); ctx.fill();
   if(hero){ ctx.fillStyle='#C23B2C'; ctx.beginPath(); ctx.moveTo(-11,-10); ctx.lineTo(11,-10); ctx.lineTo(14+Math.sin(wt*8)*2,12); ctx.lineTo(-14,12); ctx.closePath(); ctx.fill(); }
   ctx.fillStyle=tunic; ctx.strokeStyle='rgba(0,0,0,.35)'; ctx.lineWidth=2; rr(ctx,-11,-10,22,19,7); ctx.fill(); ctx.stroke();
+  if(opt.design===1){ ctx.strokeStyle='rgba(255,255,255,.55)'; ctx.lineWidth=3; ctx.beginPath(); ctx.moveTo(-9,-9); ctx.lineTo(8,8); ctx.stroke(); }
+  else if(opt.design===2){ ctx.fillStyle=tunic; ctx.strokeStyle='rgba(0,0,0,.35)'; ctx.lineWidth=2; rr(ctx,-16,-9,6,8,2); ctx.fill(); ctx.stroke(); rr(ctx,10,-9,6,8,2); ctx.fill(); ctx.stroke(); }
+  else if(opt.design===3){ ctx.fillStyle=tunic; ctx.strokeStyle='rgba(0,0,0,.35)'; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(-9,8); ctx.lineTo(9,8); ctx.lineTo(7,18); ctx.lineTo(-7,18); ctx.closePath(); ctx.fill(); ctx.stroke(); }
+  else if(opt.design===4){ ctx.fillStyle='#E8C34A'; rr(ctx,-14,-10,5,5,2); ctx.fill(); rr(ctx,9,-10,5,5,2); ctx.fill(); }
   ctx.fillStyle='#5A3A20'; ctx.fillRect(-11,1,22,4); ctx.fillStyle='#E8C34A'; ctx.fillRect(-2,1,4,4);
   ctx.fillStyle='#F2C9A0'; ctx.beginPath(); ctx.arc(0,-20,11,0,6.3); ctx.fill(); ctx.stroke();
   var isF=opt.gender==='f', hairC=isMe?'#5B3A1E':'#2F2A26';
@@ -1817,7 +1826,7 @@ function spawnBots(names){
 function ensureBots(id){ if(!bots[id]) bots[id]=[]; }
 function showBotPanel(){
   var n=(bots[zoneId]||[]).length;
-  var h='<div class="note">Tempel nama penonton TikTok live-mu (satu nama per baris, atau dipisah koma). Mereka akan muncul sebagai karakter yang berjalan-jalan di zona ini, ikut menyerang monster terdekat, dan bisa kamu pukul sampai mati (dapat koin) — bukan pemain sungguhan, dan hanya terlihat di layarmu sendiri.</div>'+
+  var h='<div class="note">Satu nama per baris/koma. Bot ikut nyerang monster & bisa kamu bunuh (dapat koin).</div>'+
     '<textarea id="botTa" placeholder="contoh:\nbudi_87\nsiti.aminah\n@rafi_ganteng"></textarea>'+
     '<div class="botrow"><button class="gbtn" id="botAdd">Munculkan</button><button class="gbtn off" id="botClear" style="background:#d68a8a;color:#3a1010">Hapus bot di zona ini</button></div>'+
     '<div class="note">Bot di zona ini sekarang: '+n+' · Total semua zona: '+totalBots()+' (maks 80)</div>';
