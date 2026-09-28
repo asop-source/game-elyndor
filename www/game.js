@@ -578,7 +578,14 @@ function login(){
   $('enterBtn').disabled=true;
   var fail=function(t){msg.textContent=t;$('enterBtn').disabled=false;};
   if(typeof claude==='undefined'||!claude.use){ P=freshPlayer(name); pickNewCharacter(function(){ goOffline(name); }); return; }
+  var settled=false;
+  var toTimer=setTimeout(function(){
+    if(settled) return; settled=true;
+    P=freshPlayer(name);
+    pickNewCharacter(function(){ goOffline(name); toast('Backend online tidak merespons, main mode latihan dulu ya.',2600); });
+  },7000);
   claude.use('db').then(function(d){
+    if(settled) return; settled=true; clearTimeout(toTimer);
     db=d;
     if(!db){ P=freshPlayer(name); pickNewCharacter(function(){ goOffline(name); }); return; }
     myRef=db.doc('players/'+nameId(name));
@@ -605,7 +612,10 @@ function login(){
         });
       }
     });
-  }).catch(function(e){ var m=(e&&(e.code||e.message))||'error'; if($('game').style.display==='block') window.__showErr(m); else fail('Gagal terhubung ('+m+'). Coba lagi.'); });
+  }).catch(function(e){
+    if(settled) return; settled=true; clearTimeout(toTimer);
+    var m=(e&&(e.code||e.message))||'error'; if($('game').style.display==='block') window.__showErr(m); else fail('Gagal terhubung ('+m+'). Coba lagi.');
+  });
 }
 function pickNewCharacter(done){
   showGenderPicker(function(g){ P.gender=g; showElementPicker(function(el){ P.element=el; P.skills[el]=1; done(); }); });
