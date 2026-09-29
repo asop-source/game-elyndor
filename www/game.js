@@ -10,35 +10,35 @@ function genderFor(s){var h=0;for(var i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i)
 
 /* ===================== DATA ===================== */
 var ZONES={
- village:{label:'Desa Awal',sub:'Tempat aman para Perantau',w:1300,h:1000,minLv:1,safe:true,kind:'village',
-  ground:'#8DC063',ground2:'#7FB356',path:'#DCC48E',start:{x:650,y:600},
-  npcs:[{id:'ilra',x:560,y:500,name:'Penyihir Ilra',robe:'#6C5FD0',hat:true},{id:'bram',x:840,y:660,name:'Pedagang Bram',robe:'#B8741A'}],
-  portals:[{to:'forest',x:1235,y:600},{to:'ghost',x:650,y:935}],spawns:[],chests:[{id:'v1',x:130,y:130,coin:15,pot:1}]},
- forest:{label:'Hutan Bisikan',sub:'Slime dan serigala berkeliaran',w:1700,h:1300,minLv:1,kind:'forest',
-  ground:'#5B9B55',ground2:'#4D8B49',path:'#A58F60',start:{x:200,y:650},
-  npcs:[{id:'toran',x:300,y:480,name:'Pemburu Toran',robe:'#C9582F'}],
-  portals:[{to:'village',x:60,y:650},{to:'castle',x:1640,y:650}],
-  spawns:[{type:'slime',n:8},{type:'wolf',n:5},{type:'ent',n:1,x:900,y:1050}],chests:[{id:'f1',x:1560,y:130,coin:25,pot:1},{id:'f2',x:150,y:1180,coin:30}]},
- castle:{label:'Reruntuhan Kastil',sub:'Tulang-belulang tak mau tidur',w:1700,h:1300,minLv:4,kind:'castle',
-  ground:'#A6A092',ground2:'#979182',path:'#C8BFAA',start:{x:200,y:650},
-  npcs:[{id:'maren',x:320,y:480,name:'Penyihir Maren',robe:'#2E7FA8',hat:true}],
-  portals:[{to:'forest',x:60,y:650},{to:'cave',x:1640,y:650}],
-  spawns:[{type:'skeleton',n:7},{type:'bat',n:5},{type:'boneking',n:1,x:900,y:950}],chests:[{id:'c1',x:850,y:130,coin:60,pot:2},{id:'c2',x:1560,y:1180,coin:50}]},
- cave:{label:'Gua Kristal',sub:'Cahaya dingin di bawah tanah',w:1700,h:1300,minLv:7,kind:'cave',
-  ground:'#3E3858',ground2:'#35304D',path:'#51497A',start:{x:200,y:650},
-  npcs:[{id:'sael',x:320,y:480,name:'Penyihir Sael',robe:'#1D9E75',hat:true}],
-  portals:[{to:'castle',x:60,y:650},{to:'lair',x:1640,y:650}],
-  spawns:[{type:'spider',n:6},{type:'golem',n:4},{type:'crystalking',n:1,x:950,y:950}],chests:[{id:'k1',x:150,y:130,coin:90,pot:2},{id:'k2',x:1560,y:1180,coin:100,pot:2}]},
- lair:{label:'Sarang Vaelgorn',sub:'Hanya yang berani yang kembali',w:1500,h:1100,minLv:10,kind:'lair',
-  ground:'#6E3B2C',ground2:'#5E3226',path:'#8A543E',start:{x:200,y:550},
-  npcs:[],portals:[{to:'cave',x:60,y:550}],
-  spawns:[{type:'dragon',n:1,x:1050,y:550}],chests:[]},
- ghost:{label:'Desa Angker',sub:'Malam yang tak pernah berakhir',w:1700,h:1300,minLv:5,kind:'ghost',
-  ground:'#26304A',ground2:'#202940',path:'#4B4A63',start:{x:200,y:650},
-  npcs:[{id:'darmo',x:320,y:480,name:'Mbah Darmo',robe:'#5A4630',blangkon:true}],
-  portals:[{to:'village',x:60,y:650}],
-  spawns:[{type:'tuyul',n:7},{type:'pocong',n:6},{type:'kuntilanak',n:4},{type:'genderuwo',n:2},{type:'banaspati',n:1,x:950,y:700}],
-  chests:[{id:'g1',x:1560,y:150,coin:120,pot:2},{id:'g2',x:150,y:1170,coin:110},{id:'g3',x:1580,y:1160,coin:140,pot:3}]}
+ village:{label:'Desa Awal',sub:'Tempat aman para Perantau',w:1900,h:1450,minLv:1,safe:true,kind:'village',
+  ground:'#8DC063',ground2:'#7FB356',path:'#DCC48E',start:{x:950,y:870},
+  npcs:[{id:'ilra',x:810,y:730,name:'Penyihir Ilra',robe:'#6C5FD0',hat:true},{id:'bram',x:1220,y:960,name:'Pedagang Bram',robe:'#B8741A'}],
+  portals:[{to:'forest',x:1790,y:870},{to:'ghost',x:950,y:1360}],spawns:[],chests:[{id:'v1',x:190,y:190,coin:15,pot:1}]},
+ forest:{label:'Hutan Bisikan',sub:'Slime dan serigala berkeliaran',w:2470,h:1890,minLv:1,kind:'forest',
+  ground:'#5B9B55',ground2:'#4D8B49',path:'#A58F60',start:{x:290,y:940},
+  npcs:[{id:'toran',x:440,y:700,name:'Pemburu Toran',robe:'#C9582F'}],
+  portals:[{to:'village',x:90,y:940},{to:'castle',x:2380,y:940}],
+  spawns:[{type:'slime',n:12},{type:'wolf',n:8},{type:'ent',n:1,x:1300,y:1520}],chests:[{id:'f1',x:2260,y:190,coin:25,pot:1},{id:'f2',x:220,y:1710,coin:30}]},
+ castle:{label:'Reruntuhan Kastil',sub:'Tulang-belulang tak mau tidur',w:2470,h:1890,minLv:4,kind:'castle',
+  ground:'#A6A092',ground2:'#979182',path:'#C8BFAA',start:{x:290,y:940},
+  npcs:[{id:'maren',x:460,y:700,name:'Penyihir Maren',robe:'#2E7FA8',hat:true}],
+  portals:[{to:'forest',x:90,y:940},{to:'cave',x:2380,y:940}],
+  spawns:[{type:'skeleton',n:10},{type:'bat',n:8},{type:'boneking',n:1,x:1300,y:1380}],chests:[{id:'c1',x:1230,y:190,coin:60,pot:2},{id:'c2',x:2260,y:1710,coin:50}]},
+ cave:{label:'Gua Kristal',sub:'Cahaya dingin di bawah tanah',w:2470,h:1890,minLv:7,kind:'cave',
+  ground:'#3E3858',ground2:'#35304D',path:'#51497A',start:{x:290,y:940},
+  npcs:[{id:'sael',x:460,y:700,name:'Penyihir Sael',robe:'#1D9E75',hat:true}],
+  portals:[{to:'castle',x:90,y:940},{to:'lair',x:2380,y:940}],
+  spawns:[{type:'spider',n:9},{type:'golem',n:6},{type:'crystalking',n:1,x:1380,y:1380}],chests:[{id:'k1',x:220,y:190,coin:90,pot:2},{id:'k2',x:2260,y:1710,coin:100,pot:2}]},
+ lair:{label:'Sarang Vaelgorn',sub:'Hanya yang berani yang kembali',w:2180,h:1600,minLv:10,kind:'lair',
+  ground:'#6E3B2C',ground2:'#5E3226',path:'#8A543E',start:{x:290,y:800},
+  npcs:[],portals:[{to:'cave',x:90,y:800}],
+  spawns:[{type:'dragon',n:1,x:1520,y:800}],chests:[]},
+ ghost:{label:'Desa Angker',sub:'Malam yang tak pernah berakhir',w:2470,h:1890,minLv:5,kind:'ghost',
+  ground:'#26304A',ground2:'#202940',path:'#4B4A63',start:{x:290,y:940},
+  npcs:[{id:'darmo',x:460,y:700,name:'Mbah Darmo',robe:'#5A4630',blangkon:true}],
+  portals:[{to:'village',x:90,y:940}],
+  spawns:[{type:'tuyul',n:10},{type:'pocong',n:9},{type:'kuntilanak',n:6},{type:'genderuwo',n:3},{type:'banaspati',n:1,x:1380,y:1015}],
+  chests:[{id:'g1',x:2260,y:220,coin:120,pot:2},{id:'g2',x:220,y:1700,coin:110},{id:'g3',x:2290,y:1680,coin:140,pot:3}]}
 };
 var ORDER=['village','forest','castle','cave','lair','ghost'];
 
@@ -1317,15 +1317,20 @@ function drawHero(x,y,f,wt,at,tunic,isMe,name,lv,hp,mh,hurt,hero,opt){
       }
     } else { ctx.translate(fx>=0?12:-12,0); ctx.rotate(fx>=0?-0.5:-2.64); }
     ctx.fillStyle='#6B4A2A'; rr(ctx,-2,-3,8,6,2); ctx.fill();
+    ctx.fillStyle='#3A2612'; ctx.beginPath(); ctx.arc(-2,0,2.2,0,6.3); ctx.fill();
     ctx.fillStyle='#D6A93A'; ctx.fillRect(5,-6,4,12);
     ctx.fillStyle='#E6EEF2'; ctx.strokeStyle='#8093A0'; ctx.lineWidth=1.5;
     ctx.beginPath(); ctx.moveTo(9,-3); ctx.lineTo(30,-2); ctx.lineTo(34,0); ctx.lineTo(30,2); ctx.lineTo(9,3); ctx.closePath(); ctx.fill(); ctx.stroke();
+    ctx.strokeStyle='rgba(255,255,255,.65)'; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(10,-0.5); ctx.lineTo(30,-0.2); ctx.stroke();
     ctx.restore();
   };
   if(up) drawSword();
-  ctx.fillStyle='#4A3526'; rr(ctx,-8,4+leg*0.3,6,11,3); ctx.fill(); rr(ctx,2,4-leg*0.3,6,11,3); ctx.fill();
+  ctx.fillStyle='#4A3526'; rr(ctx,-8,4+leg*0.3,6,7,3); ctx.fill(); rr(ctx,2,4-leg*0.3,6,7,3); ctx.fill();
+  ctx.fillStyle='#2B1D12'; rr(ctx,-8,10+leg*0.3,6,5,2); ctx.fill(); rr(ctx,2,10-leg*0.3,6,5,2); ctx.fill();
   if(hero){ ctx.fillStyle='#C23B2C'; ctx.beginPath(); ctx.moveTo(-11,-10); ctx.lineTo(11,-10); ctx.lineTo(14+Math.sin(wt*8)*2,12); ctx.lineTo(-14,12); ctx.closePath(); ctx.fill(); }
+  ctx.fillStyle='rgba(0,0,0,.14)'; ctx.beginPath(); ctx.ellipse(-11,-1,4,8.5,0,0,6.3); ctx.fill(); ctx.beginPath(); ctx.ellipse(11,-1,4,8.5,0,0,6.3); ctx.fill();
   ctx.fillStyle=tunic; ctx.strokeStyle='rgba(0,0,0,.35)'; ctx.lineWidth=2; rr(ctx,-11,-10,22,19,7); ctx.fill(); ctx.stroke();
+  ctx.fillStyle='rgba(255,255,255,.16)'; rr(ctx,-8,-8,7,5,3); ctx.fill();
   if(opt.design===1){ ctx.strokeStyle='rgba(255,255,255,.55)'; ctx.lineWidth=3; ctx.beginPath(); ctx.moveTo(-9,-9); ctx.lineTo(8,8); ctx.stroke(); }
   else if(opt.design===2){ ctx.fillStyle=tunic; ctx.strokeStyle='rgba(0,0,0,.35)'; ctx.lineWidth=2; rr(ctx,-16,-9,6,8,2); ctx.fill(); ctx.stroke(); rr(ctx,10,-9,6,8,2); ctx.fill(); ctx.stroke(); }
   else if(opt.design===3){ ctx.fillStyle=tunic; ctx.strokeStyle='rgba(0,0,0,.35)'; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(-9,8); ctx.lineTo(9,8); ctx.lineTo(7,18); ctx.lineTo(-7,18); ctx.closePath(); ctx.fill(); ctx.stroke(); }
@@ -1357,6 +1362,9 @@ function drawHero(x,y,f,wt,at,tunic,isMe,name,lv,hp,mh,hurt,hero,opt){
     ctx.fillStyle='#C23B2C'; ctx.beginPath(); ctx.arc(0,-27,2,0,6.3); ctx.fill();
   }
   if(!up){ ctx.fillStyle='#2B1D12'; var ex=fx*3.5; ctx.beginPath(); ctx.arc(-4+ex,-19,1.8,0,6.3); ctx.arc(4+ex,-19,1.8,0,6.3); ctx.fill();
+    ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(-4.7+ex,-19.7,0.65,0,6.3); ctx.arc(3.3+ex,-19.7,0.65,0,6.3); ctx.fill();
+    ctx.strokeStyle='#2B1D12'; ctx.lineWidth=1.2; ctx.lineCap='round';
+    ctx.beginPath(); ctx.moveTo(-6.2+ex,-22.6); ctx.lineTo(-2.4+ex,-23); ctx.moveTo(2.4+ex,-23); ctx.lineTo(6.2+ex,-22.6); ctx.stroke();
     ctx.fillStyle='rgba(230,110,110,.45)'; ctx.beginPath(); ctx.arc(-7+ex,-15,2.2,0,6.3); ctx.arc(7+ex,-15,2.2,0,6.3); ctx.fill(); }
   if(!up) drawSword();
   if(opt.shield>0){ var tt=performance.now()/1000, al=Math.min(1,opt.shield*2);
