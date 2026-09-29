@@ -146,7 +146,7 @@ var cv=$('cv'), ctx=cv.getContext('2d'), W=0, H=0, DPR=1;
 /* ===== Layar selalu mendatar: kalau HP terkunci tegak, seluruh game diputar 90 derajat ===== */
 var LAND={forced:false,flip:false}, HOLDCLR=[];
 try{ LAND.flip=localStorage.getItem('elyndor_flip')==='1'; }catch(e){}
-function vsize(){ var de=document.documentElement; return {w:window.innerWidth||de.clientWidth, h:window.innerHeight||de.clientHeight}; }
+function vsize(){ var vv=window.visualViewport; if(vv) return {w:vv.width,h:vv.height}; var de=document.documentElement; return {w:window.innerWidth||de.clientWidth, h:window.innerHeight||de.clientHeight}; }
 function isPortraitScreen(){
   try{ var t=screen.orientation&&screen.orientation.type; if(t) return t.indexOf('portrait')===0; }catch(e){}
   if(typeof window.orientation==='number') return Math.abs(window.orientation)!==90;
@@ -154,6 +154,8 @@ function isPortraitScreen(){
 }
 function applyLayout(){
   var app=$('app'); if(!app) return; var v=vsize();
+  var vv=window.visualViewport;
+  app.style.left=(vv?vv.offsetLeft:0)+'px'; app.style.top=(vv?vv.offsetTop:0)+'px';
   var lg=$('login'), inLogin=!!(lg&&lg.style.display!=='none');
   var forced=isPortraitScreen() && v.w<=v.h*1.25 && !inLogin;
   LAND.forced=forced; document.body.classList.toggle('lsforce',forced);
@@ -176,6 +178,7 @@ try{ new MutationObserver(function(){ onViewChange(); }).observe($('login'),{att
 window.addEventListener('resize',onViewChange);
 window.addEventListener('orientationchange',function(){ setTimeout(onViewChange,150); setTimeout(onViewChange,600); });
 try{ if(screen.orientation&&screen.orientation.addEventListener) screen.orientation.addEventListener('change',function(){ setTimeout(onViewChange,100); }); }catch(e){}
+try{ if(window.visualViewport){ window.visualViewport.addEventListener('resize',onViewChange); window.visualViewport.addEventListener('scroll',onViewChange); } }catch(e){}
 var cam={x:0,y:0}, zone=null, zoneId='village';
 var monsters={}, particles=[], floaters=[], hazards=[], peers={}, bots={};
 var input={jx:0,jy:0,keys:{}}, joy=null;
