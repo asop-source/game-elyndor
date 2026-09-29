@@ -18,17 +18,17 @@ var ZONES={
   ground:'#5B9B55',ground2:'#4D8B49',path:'#A58F60',start:{x:200,y:650},
   npcs:[{id:'toran',x:300,y:480,name:'Pemburu Toran',robe:'#C9582F'}],
   portals:[{to:'village',x:60,y:650},{to:'castle',x:1640,y:650}],
-  spawns:[{type:'slime',n:8},{type:'wolf',n:5}],chests:[{id:'f1',x:1560,y:130,coin:25,pot:1},{id:'f2',x:150,y:1180,coin:30}]},
+  spawns:[{type:'slime',n:8},{type:'wolf',n:5},{type:'ent',n:1,x:900,y:1050}],chests:[{id:'f1',x:1560,y:130,coin:25,pot:1},{id:'f2',x:150,y:1180,coin:30}]},
  castle:{label:'Reruntuhan Kastil',sub:'Tulang-belulang tak mau tidur',w:1700,h:1300,minLv:4,kind:'castle',
   ground:'#A6A092',ground2:'#979182',path:'#C8BFAA',start:{x:200,y:650},
   npcs:[{id:'maren',x:320,y:480,name:'Penyihir Maren',robe:'#2E7FA8',hat:true}],
   portals:[{to:'forest',x:60,y:650},{to:'cave',x:1640,y:650}],
-  spawns:[{type:'skeleton',n:7},{type:'bat',n:5}],chests:[{id:'c1',x:850,y:130,coin:60,pot:2},{id:'c2',x:1560,y:1180,coin:50}]},
+  spawns:[{type:'skeleton',n:7},{type:'bat',n:5},{type:'boneking',n:1,x:900,y:950}],chests:[{id:'c1',x:850,y:130,coin:60,pot:2},{id:'c2',x:1560,y:1180,coin:50}]},
  cave:{label:'Gua Kristal',sub:'Cahaya dingin di bawah tanah',w:1700,h:1300,minLv:7,kind:'cave',
   ground:'#3E3858',ground2:'#35304D',path:'#51497A',start:{x:200,y:650},
   npcs:[{id:'sael',x:320,y:480,name:'Penyihir Sael',robe:'#1D9E75',hat:true}],
   portals:[{to:'castle',x:60,y:650},{to:'lair',x:1640,y:650}],
-  spawns:[{type:'spider',n:6},{type:'golem',n:4}],chests:[{id:'k1',x:150,y:130,coin:90,pot:2},{id:'k2',x:1560,y:1180,coin:100,pot:2}]},
+  spawns:[{type:'spider',n:6},{type:'golem',n:4},{type:'crystalking',n:1,x:950,y:950}],chests:[{id:'k1',x:150,y:130,coin:90,pot:2},{id:'k2',x:1560,y:1180,coin:100,pot:2}]},
  lair:{label:'Sarang Vaelgorn',sub:'Hanya yang berani yang kembali',w:1500,h:1100,minLv:10,kind:'lair',
   ground:'#6E3B2C',ground2:'#5E3226',path:'#8A543E',start:{x:200,y:550},
   npcs:[],portals:[{to:'cave',x:60,y:550}],
@@ -37,7 +37,7 @@ var ZONES={
   ground:'#26304A',ground2:'#202940',path:'#4B4A63',start:{x:200,y:650},
   npcs:[{id:'darmo',x:320,y:480,name:'Mbah Darmo',robe:'#5A4630',blangkon:true}],
   portals:[{to:'village',x:60,y:650}],
-  spawns:[{type:'tuyul',n:7},{type:'pocong',n:6},{type:'kuntilanak',n:4},{type:'genderuwo',n:2}],
+  spawns:[{type:'tuyul',n:7},{type:'pocong',n:6},{type:'kuntilanak',n:4},{type:'genderuwo',n:2},{type:'banaspati',n:1,x:950,y:700}],
   chests:[{id:'g1',x:1560,y:150,coin:120,pot:2},{id:'g2',x:150,y:1170,coin:110},{id:'g3',x:1580,y:1160,coin:140,pot:3}]}
 };
 var ORDER=['village','forest','castle','cave','lair','ghost'];
@@ -53,7 +53,11 @@ var MON={
  pocong:{name:'Pocong',hp:120,atk:15,spd:1.1,xp:36,coin:12,r:15,aggro:200,acd:1.3,hop:true},
  kuntilanak:{name:'Kuntilanak',hp:95,atk:17,spd:1.5,xp:44,coin:16,r:15,aggro:260,acd:1.1,fly:true,wail:6},
  genderuwo:{name:'Genderuwo',hp:320,atk:27,spd:0.9,xp:95,coin:38,r:28,aggro:220,acd:1.7},
- dragon:{name:'Vaelgorn',hp:2400,atk:30,spd:1.1,xp:900,coin:300,r:58,aggro:420,acd:1.4,boss:true,respawn:90}
+ dragon:{name:'Vaelgorn',hp:2400,atk:30,spd:1.1,xp:900,coin:300,r:58,aggro:420,acd:1.4,boss:true,respawn:90,title:'Naga Purba'},
+ ent:{name:'Ki Ageng Rimba',hp:650,atk:20,spd:0.7,xp:220,coin:60,r:36,aggro:260,acd:1.6,boss:true,respawn:70,title:'Roh Hutan Purba'},
+ boneking:{name:'Raja Baskara',hp:1000,atk:26,spd:1.0,xp:320,coin:85,r:30,aggro:260,acd:1.3,boss:true,respawn:75,title:'Raja Tulang Kastil'},
+ crystalking:{name:'Sang Penjaga Kristal',hp:1600,atk:34,spd:0.7,xp:480,coin:130,r:44,aggro:260,acd:1.7,boss:true,respawn:85,title:'Penjaga Gua Kristal'},
+ banaspati:{name:'Banaspati Agung',hp:1300,atk:30,spd:1.2,xp:400,coin:110,r:34,aggro:280,acd:1.2,boss:true,fly:true,wail:8,respawn:80,title:'Api Angker Terkuat'}
 };
 
 var ELEMENTS=[
@@ -378,7 +382,7 @@ function sfx(name,vol){
     f(t,vol==null?1:vol); }catch(e){}
 }
 function monAggro(m,d){
-  var v=clamp(1-d/520,0.2,1), n={tuyul:'giggle',pocong:'moan',kuntilanak:'wail',genderuwo:'growl2',dragon:'growl2',golem:'growl2',wolf:'growl',skeleton:'growl',spider:'growl'}[m.type];
+  var v=clamp(1-d/520,0.2,1), n={tuyul:'giggle',pocong:'moan',kuntilanak:'wail',genderuwo:'growl2',dragon:'growl2',golem:'growl2',wolf:'growl',skeleton:'growl',spider:'growl',ent:'growl2',boneking:'growl2',crystalking:'growl2',banaspati:'wail'}[m.type];
   if(n) sfx(n,v);
 }
 document.addEventListener('visibilitychange',function(){ try{ if(!AUD.ctx) return; if(document.hidden) AUD.ctx.suspend(); else AUD.ctx.resume(); }catch(e){} });
@@ -514,6 +518,7 @@ function renderBg(z,r){
   return c;
 }
 
+function zoneBossType(z){for(var i=0;i<z.spawns.length;i++){var T=MON[z.spawns[i].type];if(T&&T.boss)return z.spawns[i].type;}return null;}
 function spawnMonsters(id){
   if(monsters[id]) return;
   var z=ZONES[id], r=rng(id.length*131+7), list=[], k=0;
@@ -709,7 +714,9 @@ function enterZone(id,fromId,keepPos){
   } else { P.x=clamp(P.x||zone.start.x,40,zone.w-40); P.y=clamp(P.y||zone.start.y,40,zone.h-40); }
   if(P.visited.indexOf(id)<0) P.visited.push(id);
   portalCd=1.2;
-  $('bossbar').style.display=id==='lair'?'block':'none';
+  var bs=zoneBossType(zone);
+  if(bs){ $('bossbar').style.display='block'; $('bossName').textContent=MON[bs].name+(MON[bs].title?', '+MON[bs].title:''); }
+  else { $('bossbar').style.display='none'; }
   $('bnT').textContent=zone.label; $('bnS').textContent=zone.sub;
   var b=$('banner'); b.style.opacity='1'; clearTimeout(enterZone.h); enterZone.h=setTimeout(function(){b.style.opacity='0';},2200);
   dirty=true; save(true); sendPresence(true); hud();
@@ -1001,7 +1008,7 @@ function killMonster(m){
   if(drop){P.potions+=T.boss?3:1; floaters.push({x:m.x,y:m.y-T.r-46,t:'+🧪',c:'#FFB3D9',life:1.2,s:16});}
   var q=QUESTS[P.q]; if(q && P.qa && q.type==='kill' && q.target===m.type && P.qp<q.n){ P.qp++; if(P.qp>=q.n) toast('Quest selesai! Kembali ke '+npcName(q.giver)+'.',3000); }
   var sq=SQUESTS[P.sq]; if(sq && P.sqa && sq.target===m.type && P.sqp<sq.n){ P.sqp++; if(P.sqp>=sq.n) toast('Quest selesai! Kembali ke Mbah Darmo.',3000); }
-  if(T.boss){ toast('Vaelgorn tumbang! Para Perantau bersorak!',4000); }
+  if(T.boss){ toast(T.name+' tumbang! Para Perantau bersorak!',4000); }
   gainXp(T.xp); dirty=true; hud();
 }
 function gainXp(x){
@@ -1210,7 +1217,7 @@ function updMonster(m,dt,now){
 /* ===================== DRAW ===================== */
 function rr(g,x,y,w,h,r){g.beginPath();g.moveTo(x+r,y);g.arcTo(x+w,y,x+w,y+h,r);g.arcTo(x+w,y+h,x,y+h,r);g.arcTo(x,y+h,x,y,r);g.arcTo(x,y,x+w,y,r);g.closePath();}
 function shadow(x,y,rx){ctx.fillStyle='rgba(0,0,0,.22)';ctx.beginPath();ctx.ellipse(x,y,rx,rx*0.38,0,0,6.3);ctx.fill();}
-function monColor(t){return {slime:'#6CCB5F',wolf:'#8D8C88',skeleton:'#EDE7D6',bat:'#6E58C9',spider:'#3FC7A8',golem:'#7FA7D6',dragon:'#C23B2C',tuyul:'#9CB597',pocong:'#E9E6DA',kuntilanak:'#F1EFE6',genderuwo:'#3B2E27'}[t];}
+function monColor(t){return {slime:'#6CCB5F',wolf:'#8D8C88',skeleton:'#EDE7D6',bat:'#6E58C9',spider:'#3FC7A8',golem:'#7FA7D6',dragon:'#C23B2C',tuyul:'#9CB597',pocong:'#E9E6DA',kuntilanak:'#F1EFE6',genderuwo:'#3B2E27',ent:'#3F6B2E',boneking:'#D8CFAE',crystalking:'#9FD9F0',banaspati:'#FF6A2E'}[t];}
 
 function draw(){
   ctx.setTransform(DPR,0,0,DPR,0,0);
@@ -1582,6 +1589,47 @@ function drawMonster(m,t){
     ctx.fillStyle='#2B1D12'; ctx.fillRect(hx2+face*6-1,hy2-7,2,6);
     if(dragonSkillT<1.2){ ctx.fillStyle='rgba(255,140,40,'+(1.2-dragonSkillT)+')'; ctx.beginPath(); ctx.arc(hx2+face*30,hy2+8,6+(1.2-dragonSkillT)*8,0,6.3); ctx.fill(); }
     y=y-40;
+  } else if(m.type==='ent'){
+    shadow(x,y+34,38); var sw2=Math.sin(a*1.6)*3;
+    ctx.strokeStyle=fl?'#fff':'#2E4A1E'; ctx.lineWidth=10; ctx.lineCap='round';
+    ctx.beginPath(); ctx.moveTo(x-face*20,y-10); ctx.lineTo(x-face*44+sw2,y-40); ctx.moveTo(x+face*20,y-10); ctx.lineTo(x+face*44-sw2,y-40); ctx.stroke();
+    ctx.fillStyle=fl?'#fff':c; ctx.strokeStyle='#2E4A1E'; ctx.lineWidth=3;
+    ctx.beginPath(); ctx.moveTo(x-24,y+16); ctx.quadraticCurveTo(x-30,y-24,x-14,y-50); ctx.quadraticCurveTo(x,y-58,x+14,y-50); ctx.quadraticCurveTo(x+30,y-24,x+24,y+16); ctx.quadraticCurveTo(x,y+24,x-24,y+16); ctx.closePath(); ctx.fill(); ctx.stroke();
+    ctx.strokeStyle='#1E320F'; ctx.lineWidth=2; for(var ei=0;ei<4;ei++){ ctx.beginPath(); ctx.moveTo(x-16+ei*10,y-40); ctx.lineTo(x-14+ei*10,y+8); ctx.stroke(); }
+    ctx.fillStyle='#3E7A2E'; for(var lf=0;lf<7;lf++){ var la=lf/7*6.3+a*0.5; ctx.beginPath(); ctx.ellipse(x+Math.cos(la)*20,y-56+Math.sin(la)*10,9,6,la,0,6.3); ctx.fill(); }
+    ctx.fillStyle='#FFD34A'; ctx.beginPath(); ctx.arc(x-6,y-30,2.6,0,6.3); ctx.arc(x+6,y-30,2.6,0,6.3); ctx.fill();
+    y=y-20;
+  } else if(m.type==='boneking'){
+    shadow(x,y+16,22); var st5=Math.sin(a*7)*3;
+    ctx.strokeStyle=fl?'#fff':'#B8B09A'; ctx.lineWidth=6; ctx.lineCap='round';
+    ctx.beginPath(); ctx.moveTo(x-6,y+4); ctx.lineTo(x-9,y+22+st5*0.3); ctx.moveTo(x+6,y+4); ctx.lineTo(x+9,y+22-st5*0.3); ctx.stroke();
+    ctx.fillStyle=fl?'#fff':'#2A2622'; rr(ctx,x-20,y-8,40,24,6); ctx.fill();
+    ctx.fillStyle=fl?'#fff':c; rr(ctx,x-15,y-24,30,26,7); ctx.fill(); ctx.strokeStyle='#8E8674'; ctx.lineWidth=2.5;
+    ctx.beginPath(); for(var bi=0;bi<4;bi++){ctx.moveTo(x-13,y-18+bi*5);ctx.lineTo(x+13,y-18+bi*5);} ctx.stroke();
+    ctx.fillStyle=fl?'#fff':c; ctx.strokeStyle='#8E8674'; ctx.beginPath(); ctx.arc(x,y-40,17,0,6.3); ctx.fill(); ctx.stroke();
+    ctx.fillStyle='#FFD34A'; ctx.beginPath(); ctx.moveTo(x-14,y-54); ctx.lineTo(x-9,y-70); ctx.lineTo(x-2,y-56); ctx.lineTo(x+2,y-70); ctx.lineTo(x+9,y-56); ctx.lineTo(x+14,y-54); ctx.closePath(); ctx.fill();
+    ctx.fillStyle='#FF3B2A'; ctx.beginPath(); ctx.arc(x-6+face,y-41,3.4,0,6.3); ctx.arc(x+6+face,y-41,3.4,0,6.3); ctx.fill();
+    ctx.strokeStyle='#9AA3A8'; ctx.lineWidth=4; ctx.beginPath(); ctx.moveTo(x+face*16,y-6); ctx.lineTo(x+face*40,y-30); ctx.stroke();
+    y=y-16;
+  } else if(m.type==='crystalking'){
+    shadow(x,y+24,40); var st6=Math.sin(a*4)*3;
+    ctx.fillStyle=fl?'#fff':'#6A8FBF'; rr(ctx,x-30,y+4+st6,20,24,6); ctx.fill(); rr(ctx,x+10,y+4-st6,20,24,6); ctx.fill();
+    ctx.fillStyle=fl?'#fff':c; ctx.strokeStyle='#2E5A80'; ctx.lineWidth=3; rr(ctx,x-36,y-48,72,58,14); ctx.fill(); ctx.stroke();
+    rr(ctx,x-52,y-36+st6,20,42,7); ctx.fill(); ctx.stroke(); rr(ctx,x+32,y-36-st6,20,42,7); ctx.fill(); ctx.stroke();
+    ctx.fillStyle='#D8F4FF'; ctx.beginPath(); ctx.moveTo(x-30,y-48); ctx.lineTo(x-20,y-72); ctx.lineTo(x-8,y-48); ctx.moveTo(x+6,y-48); ctx.lineTo(x+18,y-76); ctx.lineTo(x+30,y-48); ctx.fill();
+    var glow=0.55+Math.sin(a*3)*0.25; ctx.fillStyle='rgba(200,240,255,'+glow+')'; ctx.beginPath(); ctx.arc(x,y-20,12,0,6.3); ctx.fill();
+    ctx.fillStyle='#E8FBFF'; ctx.fillRect(x-18+face*2,y-32,10,6); ctx.fillRect(x+8+face*2,y-32,10,6);
+    y=y-24;
+  } else if(m.type==='banaspati'){
+    var bf=y-18+Math.sin(a*3)*6, flick=Math.sin(a*10)*4; ctx.globalAlpha=0.85+Math.sin(a*4)*0.1;
+    ctx.fillStyle='rgba(0,0,0,.2)'; ctx.beginPath(); ctx.ellipse(x,y+18,16,5,0,0,6.3); ctx.fill();
+    ctx.fillStyle=fl?'#fff':'#FF8A3A'; ctx.beginPath();
+    ctx.moveTo(x,bf-30-flick); ctx.quadraticCurveTo(x+16,bf-8,x+11,bf+18); ctx.quadraticCurveTo(x+4,bf+30,x,bf+34);
+    ctx.quadraticCurveTo(x-4,bf+30,x-11,bf+18); ctx.quadraticCurveTo(x-16,bf-8,x,bf-30-flick); ctx.closePath(); ctx.fill();
+    ctx.fillStyle=fl?'#fff':'#FFD34A'; ctx.beginPath(); ctx.ellipse(x,bf+4,11,15,0,0,6.3); ctx.fill();
+    ctx.fillStyle='#FF3B2A'; ctx.beginPath(); ctx.arc(x-4,bf-2,2.4,0,6.3); ctx.arc(x+4,bf-2,2.4,0,6.3); ctx.fill();
+    ctx.fillStyle='#7A1E0C'; ctx.beginPath(); ctx.ellipse(x,bf+8,3,2,0,0,6.3); ctx.fill();
+    ctx.globalAlpha=1; y=bf-20;
   }
   ctx.restore();
   if(!T.boss && m.hp>0){
@@ -1724,7 +1772,8 @@ function hud(){
   else { qe.innerHTML='<b>'+esc(q.title)+'</b>'+esc(MON[q.target].name)+': '+P.qp+' / '+q.n; }
   var sqh=SQUESTS[P.sq];
   if(sqh && P.sqa){ qe.innerHTML+='<div style="margin-top:5px;padding-top:4px;border-top:1px solid #c9b48a"><b>👻 '+esc(sqh.title)+(P.sqp>=sqh.n?' ✓':'')+'</b>'+(P.sqp>=sqh.n?'Lapor ke Mbah Darmo.':esc(MON[sqh.target].name)+': '+P.sqp+' / '+sqh.n)+'</div>'; }
-  if(zoneId==='lair'){ var dm=(monsters.lair||[])[0]; $('bossHp').style.width=dm?(dm.dead?0:clamp(dm.hp/dm.maxHp*100,0,100))+'%':'0'; }
+  var bt=zoneBossType(zone);
+  if(bt){ var dm=(monsters[zoneId]||[]).filter(function(m){return m.type===bt;})[0]; $('bossHp').style.width=dm?(dm.dead?0:clamp(dm.hp/dm.maxHp*100,0,100))+'%':'0'; }
 }
 function actionUi(){
   var n=npcAt(P.x,P.y,85), talk=n&&!nearestMonster(60);
