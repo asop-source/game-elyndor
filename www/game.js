@@ -1335,7 +1335,8 @@ function drawHero(x,y,f,wt,at,tunic,isMe,name,lv,hp,mh,hurt,hero,opt){
   ctx.fillStyle='rgba(255,255,255,.16)'; rr(ctx,-8,-8,7,5,3); ctx.fill();
   if(opt.design===1){ ctx.strokeStyle='rgba(255,255,255,.55)'; ctx.lineWidth=3; ctx.beginPath(); ctx.moveTo(-9,-9); ctx.lineTo(8,8); ctx.stroke(); }
   else if(opt.design===2){ ctx.fillStyle=tunic; ctx.strokeStyle='rgba(0,0,0,.35)'; ctx.lineWidth=2; rr(ctx,-16,-9,6,8,2); ctx.fill(); ctx.stroke(); rr(ctx,10,-9,6,8,2); ctx.fill(); ctx.stroke(); }
-  else if(opt.design===3){ ctx.fillStyle=tunic; ctx.strokeStyle='rgba(0,0,0,.35)'; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(-9,8); ctx.lineTo(9,8); ctx.lineTo(7,18); ctx.lineTo(-7,18); ctx.closePath(); ctx.fill(); ctx.stroke(); }
+  else if(opt.design===3){ ctx.fillStyle='#C9A227'; ctx.strokeStyle='rgba(0,0,0,.3)'; ctx.lineWidth=1.5; ctx.beginPath(); ctx.moveTo(-11,-9); ctx.lineTo(-3,-9); ctx.lineTo(6,8); ctx.lineTo(-2,8); ctx.closePath(); ctx.fill(); ctx.stroke();
+    ctx.fillStyle='rgba(255,255,255,.25)'; ctx.beginPath(); ctx.moveTo(-9,-8); ctx.lineTo(-6,-8); ctx.lineTo(2,7); ctx.lineTo(-1,7); ctx.closePath(); ctx.fill(); }
   else if(opt.design===4){ ctx.fillStyle='#E8C34A'; rr(ctx,-14,-10,5,5,2); ctx.fill(); rr(ctx,9,-10,5,5,2); ctx.fill(); }
   ctx.fillStyle='#5A3A20'; ctx.fillRect(-11,1,22,4); ctx.fillStyle='#E8C34A'; ctx.fillRect(-2,1,4,4);
   ctx.fillStyle='#F2C9A0'; ctx.beginPath(); ctx.arc(0,-20,11,0,6.3); ctx.fill(); ctx.stroke();
