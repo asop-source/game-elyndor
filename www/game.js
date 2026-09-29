@@ -1325,10 +1325,12 @@ function drawHero(x,y,f,wt,at,tunic,isMe,name,lv,hp,mh,hurt,hero,opt){
     ctx.restore();
   };
   if(up) drawSword();
-  ctx.fillStyle='#4A3526'; rr(ctx,-8,4+leg*0.3,6,7,3); ctx.fill(); rr(ctx,2,4-leg*0.3,6,7,3); ctx.fill();
-  ctx.fillStyle='#2B1D12'; rr(ctx,-8,10+leg*0.3,6,5,2); ctx.fill(); rr(ctx,2,10-leg*0.3,6,5,2); ctx.fill();
+  ctx.fillStyle='#4A3526'; rr(ctx,-8,2+leg*0.35,6,11,3); ctx.fill(); rr(ctx,2,2-leg*0.35,6,11,3); ctx.fill();
+  ctx.fillStyle='#2B1D12'; rr(ctx,-8,10+leg*0.35,6,6,2); ctx.fill(); rr(ctx,2,10-leg*0.35,6,6,2); ctx.fill();
   if(hero){ ctx.fillStyle='#C23B2C'; ctx.beginPath(); ctx.moveTo(-11,-10); ctx.lineTo(11,-10); ctx.lineTo(14+Math.sin(wt*8)*2,12); ctx.lineTo(-14,12); ctx.closePath(); ctx.fill(); }
-  ctx.fillStyle='rgba(0,0,0,.14)'; ctx.beginPath(); ctx.ellipse(-11,-1,4,8.5,0,0,6.3); ctx.fill(); ctx.beginPath(); ctx.ellipse(11,-1,4,8.5,0,0,6.3); ctx.fill();
+  ctx.fillStyle=tunic; ctx.strokeStyle='rgba(0,0,0,.3)'; ctx.lineWidth=1.5;
+  rr(ctx,-16,-7-leg*0.25,6,12,3); ctx.fill(); ctx.stroke(); rr(ctx,10,-7+leg*0.25,6,12,3); ctx.fill(); ctx.stroke();
+  ctx.fillStyle='#F2C9A0'; ctx.beginPath(); ctx.arc(-13,6-leg*0.25,3.4,0,6.3); ctx.fill(); ctx.beginPath(); ctx.arc(13,6+leg*0.25,3.4,0,6.3); ctx.fill();
   ctx.fillStyle=tunic; ctx.strokeStyle='rgba(0,0,0,.35)'; ctx.lineWidth=2; rr(ctx,-11,-10,22,19,7); ctx.fill(); ctx.stroke();
   ctx.fillStyle='rgba(255,255,255,.16)'; rr(ctx,-8,-8,7,5,3); ctx.fill();
   if(opt.design===1){ ctx.strokeStyle='rgba(255,255,255,.55)'; ctx.lineWidth=3; ctx.beginPath(); ctx.moveTo(-9,-9); ctx.lineTo(8,8); ctx.stroke(); }
