@@ -1,4 +1,5 @@
 {
+  "id": "/",
   "name": "Elyndor",
   "short_name": "Elyndor",
   "description": "Game petualangan fantasi Nusantara",
@@ -8,6 +9,7 @@
   "orientation": "landscape",
   "background_color": "#17231C",
   "theme_color": "#17231C",
+  "categories": ["games", "entertainment"],
   "icons": [
     {
       "src": "icons/icon-192.png",
