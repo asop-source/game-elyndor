@@ -3,9 +3,12 @@
   "name": "Elyndor",
   "short_name": "Elyndor",
   "description": "Game petualangan fantasi Nusantara",
+  "lang": "id",
+  "dir": "ltr",
   "start_url": ".",
   "scope": ".",
   "display": "fullscreen",
+  "display_override": ["fullscreen", "standalone"],
   "orientation": "landscape",
   "background_color": "#17231C",
   "theme_color": "#17231C",
@@ -22,6 +25,15 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "screenshots/wide-1.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Desa Awal di Elyndor"
     }
   ]
 }
