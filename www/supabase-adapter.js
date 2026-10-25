@@ -20,7 +20,7 @@
  */
 (function(){
   var SUPABASE_URL='https://ecndxpzvmvhbqpybiyph.supabase.co';
-  var SUPABASE_ANON_KEY='YOUR-ANON-KEY';
+  var SUPABASE_ANON_KEY='sb_publishable_iXJF-VMdUngqYSbLHDxowA_FQExrL0h';
   if(SUPABASE_ANON_KEY.indexOf('YOUR-')>=0){ console.warn('supabase-adapter.js belum dikonfigurasi (isi SUPABASE_URL/SUPABASE_ANON_KEY).'); return; }
   if(!window.supabase || typeof window.supabase.createClient!=='function'){ console.warn('Supabase JS library tidak termuat.'); return; }
   var sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
