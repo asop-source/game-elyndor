@@ -70,18 +70,29 @@
     });
     return out;
   }
-  channel.on('presence',{event:'sync'},function(){
+  function notify(){
     state=channel.presenceState();
     var l=list(); cbs.forEach(function(f){ try{ f({peers:l}); }catch(e){} });
-  });
+  }
+  // sync saja bisa terlewat di sebagian koneksi: dengarkan join/leave juga, dan segarkan berkala
+  channel.on('presence',{event:'sync'},notify);
+  channel.on('presence',{event:'join'},notify);
+  channel.on('presence',{event:'leave'},notify);
+  setInterval(function(){ if(joined) notify(); },1500);
   // track() hanya berlaku setelah join; kirim paling sering tiap 250 ms (batas pesan Realtime)
   var joined=false, pending=null, lastSend=0, timer=null;
   function flush(){
     timer=null; if(!joined||!pending) return;
     var p=pending; pending=null; lastSend=Date.now();
-    p._t=lastSend; channel.track(p).catch(function(){});
+    p._t=lastSend; lastPayload=p; channel.track(p).catch(function(){});
   }
-  channel.subscribe(function(st){ if(st==='SUBSCRIBED'){ joined=true; flush(); } });
+  var lastPayload=null;
+  channel.subscribe(function(st){
+    if(st==='SUBSCRIBED'){ joined=true; if(lastPayload&&!pending) pending=lastPayload; flush(); }
+    else { joined=false; console.warn('Elyndor realtime: '+st); }
+  });
+  // kirim ulang presence terakhir tiap 5 detik supaya pemain yang diam tetap terlihat (dan pulih bila sempat putus)
+  setInterval(function(){ if(joined&&lastPayload&&!pending&&Date.now()-lastSend>4500){ pending=lastPayload; flush(); } },5000);
   var room={
     presence:function(p){
       pending=p;
