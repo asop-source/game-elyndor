@@ -58,48 +58,78 @@
 
   // presence: satu channel global (klien sendiri sudah menyaring peer berdasarkan zona)
   var myKey='p'+Math.random().toString(36).slice(2,9);
-  var channel=sb.channel('elyndor-room',{config:{presence:{key:myKey}}});
-  var cbs=[], state={};
+  var cbs=[], state={}, heard={};
+  var channel=null, joined=false, pending=null, lastSend=0, timer=null, gap=250, lastPayload=null, lastEvt=Date.now(), connectAt=0;
+  var diag={status:'connecting',track:'-',peers:0,key:myKey,re:0};
   function list(){
-    var out=[];
+    var out=[], now=Date.now();
     Object.keys(state).forEach(function(k){
       var arr=state[k]; if(!arr||!arr.length) return;
       // urutan meta tidak dijamin: ambil yang paling baru lewat cap waktu _t
       var best=arr[0]; for(var i=1;i<arr.length;i++){ if((arr[i]._t||0)>=(best._t||0)) best=arr[i]; }
+      if(k!==myKey){
+        // pemain yang koneksinya mati (HP dikunci/pindah aplikasi) tetap tercatat di server sampai timeout;
+        // kalau 15 detik tidak ada kabar baru (normalnya tiap ≤5 detik), anggap sudah pergi supaya tidak jadi patung
+        var h=heard[k]; if(!h||h.t!==best._t){ h=heard[k]={t:best._t,at:now}; }
+        if(now-h.at>15000) return;
+      }
       out.push({peer:k,isMe:k===myKey,presence:best});
     });
     return out;
   }
   function notify(){
+    if(!channel) return;
     state=channel.presenceState();
     diag.peers=Object.keys(state).length;
     var l=list(); cbs.forEach(function(f){ try{ f({peers:l}); }catch(e){} });
   }
-  // sync saja bisa terlewat di sebagian koneksi: dengarkan join/leave juga, dan segarkan berkala
-  channel.on('presence',{event:'sync'},notify);
-  channel.on('presence',{event:'join'},notify);
-  channel.on('presence',{event:'leave'},notify);
-  setInterval(function(){ if(joined) notify(); },1500);
-  // track() hanya berlaku setelah join; kirim paling sering tiap 250 ms (batas pesan Realtime)
-  var joined=false, pending=null, lastSend=0, timer=null, gap=250, diag={status:'connecting',track:'-',peers:0,key:myKey};
+  function onEvt(){ lastEvt=Date.now(); notify(); }
   function flush(){
     timer=null; if(!joined||!pending) return;
-    var p=pending; pending=null; lastSend=Date.now();
+    var p=pending, ch=channel; pending=null; lastSend=Date.now();
     p._t=lastSend; lastPayload=p;
-    channel.track(p).then(function(r){
+    ch.track(p).then(function(r){
       diag.track=String(r);
+      if(r==='ok') lastEvt=Date.now(); // balasan server = koneksi hidup
       // server menolak karena terlalu sering: perlambat kirim, jangan menyerah
       if(r==='rate limited') gap=Math.min(2000,gap*2); else if(r==='ok' && gap>250) gap=Math.max(250,gap-50);
     },function(e){ diag.track='error '+((e&&e.message)||e); });
   }
-  var lastPayload=null;
-  channel.subscribe(function(st){
-    diag.status=String(st);
-    if(st==='SUBSCRIBED'){ joined=true; if(lastPayload&&!pending) pending=lastPayload; flush(); }
-    else { joined=false; console.warn('Elyndor realtime: '+st); }
+  // sambung (ulang) ke channel. Dipakai saat awal, dan saat koneksi ternyata mati diam-diam
+  // (umum di HP: tab dibekukan saat pindah aplikasi, websocket putus tanpa kabar)
+  var connecting=false;
+  function connect(){
+    if(connecting) return; connecting=true;
+    var old=channel; channel=null; joined=false; lastEvt=connectAt=Date.now(); diag.re++; diag.status='connecting';
+    Promise.resolve(old?sb.removeChannel(old):null).catch(function(){}).then(function(){
+      connecting=false;
+      var ch=sb.channel('elyndor-room',{config:{presence:{key:myKey}}});
+      ch.on('presence',{event:'sync'},onEvt);
+      ch.on('presence',{event:'join'},onEvt);
+      ch.on('presence',{event:'leave'},onEvt);
+      channel=ch;
+      ch.subscribe(function(st){
+        if(ch!==channel) return;
+        diag.status=String(st);
+        if(st==='SUBSCRIBED'){ joined=true; lastEvt=Date.now(); if(lastPayload&&!pending) pending=lastPayload; flush(); }
+        else { joined=false; console.warn('Elyndor realtime: '+st); }
+      });
+    });
+  }
+  connect();
+  function keepalive(){ if(joined&&lastPayload&&!pending){ pending=lastPayload; flush(); } }
+  setInterval(function(){
+    if(document.hidden) return;
+    notify();
+    // presence kita sendiri dipantulkan server; kalau 15 detik sepi padahal kita kirim tiap 5 detik, koneksinya mati
+    // juga kalau 15 detik tidak kunjung tersambung
+    if(Date.now()-lastEvt>15000 || (!joined && Date.now()-connectAt>15000)) connect();
+    else if(Date.now()-lastSend>4500) keepalive();
+  },1500);
+  document.addEventListener('visibilitychange',function(){
+    if(document.hidden){ if(joined&&channel) channel.untrack().catch(function(){}); return; }
+    if(Date.now()-lastEvt>8000) connect(); else keepalive();
   });
-  // kirim ulang presence terakhir tiap 5 detik supaya pemain yang diam tetap terlihat (dan pulih bila sempat putus)
-  setInterval(function(){ if(joined&&lastPayload&&!pending&&Date.now()-lastSend>4500){ pending=lastPayload; flush(); } },5000);
   var room={
     presence:function(p){
       pending=p;
@@ -115,7 +145,7 @@
     var box=document.createElement('div');
     box.style.cssText='position:fixed;left:4px;bottom:4px;z-index:99999;background:rgba(0,0,0,.75);color:#9f9;font:11px/1.3 monospace;padding:4px 6px;border-radius:4px;pointer-events:none;max-width:60vw';
     document.body.appendChild(box);
-    setInterval(function(){ box.textContent='b15 rt:'+diag.status+' track:'+diag.track+' keys:'+diag.peers+' gap:'+gap+' me:'+diag.key; },500);
+    setInterval(function(){ box.textContent='b16 rt:'+diag.status+' track:'+diag.track+' keys:'+diag.peers+' gap:'+gap+' re:'+diag.re+' me:'+diag.key; },500);
   }
 
   window.claude={ use:function(n){ return Promise.resolve(n==='db'?db:(n==='room'?room:null)); }, standalone:true };
