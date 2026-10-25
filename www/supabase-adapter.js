@@ -19,9 +19,9 @@
  * kasual tanpa akun/password, sama seperti mode offline). Jangan simpan data sensitif di tabel ini.
  */
 (function(){
-  var SUPABASE_URL='https://YOUR-PROJECT.supabase.co';
+  var SUPABASE_URL='https://ecndxpzvmvhbqpybiyph.supabase.co';
   var SUPABASE_ANON_KEY='YOUR-ANON-KEY';
-  if(SUPABASE_URL.indexOf('YOUR-PROJECT')>=0){ console.warn('supabase-adapter.js belum dikonfigurasi (isi SUPABASE_URL/SUPABASE_ANON_KEY).'); return; }
+  if(SUPABASE_ANON_KEY.indexOf('YOUR-')>=0){ console.warn('supabase-adapter.js belum dikonfigurasi (isi SUPABASE_URL/SUPABASE_ANON_KEY).'); return; }
   if(!window.supabase || typeof window.supabase.createClient!=='function'){ console.warn('Supabase JS library tidak termuat.'); return; }
   var sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
 
