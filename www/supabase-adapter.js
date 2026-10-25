@@ -97,12 +97,18 @@
   }
   // sambung (ulang) ke channel. Dipakai saat awal, dan saat koneksi ternyata mati diam-diam
   // (umum di HP: tab dibekukan saat pindah aplikasi, websocket putus tanpa kabar)
-  var connecting=false;
+  var connecting=false, failed=0;
   function connect(){
     if(connecting) return; connecting=true;
-    var old=channel; channel=null; joined=false; lastEvt=connectAt=Date.now(); diag.re++; diag.status='connecting';
+    var old=channel; channel=null; if(old && !joined) failed++; else failed=0;
+    joined=false; lastEvt=connectAt=Date.now(); diag.re++; diag.status='connecting';
     Promise.resolve(old?sb.removeChannel(old):null).catch(function(){}).then(function(){
-      connecting=false;
+      var rt=sb.realtime;
+      // removeChannel tidak melepas channel kalau koneksi sudah mati (unsubscribe timeout); lepas paksa
+      if(old && sb.getChannels().indexOf(old)>=0){ try{ old.teardown(); }catch(e){} if(rt&&rt._remove) rt._remove(old); }
+      // dua kali gagal berturut-turut: websocket-nya sendiri kemungkinan mati, putus dan sambung baru
+      if(failed>=2 && rt && rt.disconnect){ failed=0; return Promise.resolve(rt.disconnect()).catch(function(){}); }
+    }).then(function(){
       var ch=sb.channel('elyndor-room',{config:{presence:{key:myKey}}});
       ch.on('presence',{event:'sync'},onEvt);
       ch.on('presence',{event:'join'},onEvt);
@@ -114,7 +120,7 @@
         if(st==='SUBSCRIBED'){ joined=true; lastEvt=Date.now(); if(lastPayload&&!pending) pending=lastPayload; flush(); }
         else { joined=false; console.warn('Elyndor realtime: '+st); }
       });
-    });
+    }).catch(function(e){ diag.status='error '+((e&&e.message)||e); }).then(function(){ connecting=false; });
   }
   connect();
   function keepalive(){ if(joined&&lastPayload&&!pending){ pending=lastPayload; flush(); } }
