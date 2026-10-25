@@ -69,9 +69,20 @@
     state=channel.presenceState();
     var l=list(); cbs.forEach(function(f){ try{ f({peers:l}); }catch(e){} });
   });
-  channel.subscribe();
+  // track() hanya berlaku setelah join; kirim paling sering tiap 150 ms (batas pesan Realtime)
+  var joined=false, pending=null, lastSend=0, timer=null;
+  function flush(){
+    timer=null; if(!joined||!pending) return;
+    var p=pending; pending=null; lastSend=Date.now();
+    channel.track(p).catch(function(){});
+  }
+  channel.subscribe(function(st){ if(st==='SUBSCRIBED'){ joined=true; flush(); } });
   var room={
-    presence:function(p){ return channel.track(p).then(function(){}); },
+    presence:function(p){
+      pending=p;
+      if(!timer) timer=setTimeout(flush,Math.max(0,150-(Date.now()-lastSend)));
+      return Promise.resolve();
+    },
     onPeers:function(cb){ cbs.push(cb); return function(){ cbs=cbs.filter(function(x){ return x!==cb; }); }; },
     peers:function(){ return list(); }
   };

@@ -93,6 +93,9 @@ window.addEventListener('unhandledrejection',function(e){var r=e.reason;window._
 </div></div>
 
 </div>
+<!-- Multiplayer online: Supabase dimuat dulu; kalau belum dikonfigurasi/gagal dimuat, claude-shim.js jadi cadangan lokal -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="supabase-adapter.js"></script>
 <script src="claude-shim.js"></script>
 <script src="game.js"></script>
 <script>
