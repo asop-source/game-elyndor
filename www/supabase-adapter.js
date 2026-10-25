@@ -30,7 +30,10 @@
       var id=path.split('/').pop();
       return {
         get:function(){ return sb.from('players').select('data').eq('id',id).maybeSingle().then(function(r){
-          var d=r.data&&r.data.data; return {id:id,exists:!!d,data:function(){ return d; }}; }); },
+          var d=r.data&&r.data.data;
+          // belum ada di server: pakai simpanan lama mode lokal (claude-shim) supaya progres tidak hilang
+          if(!d){ try{ d=JSON.parse(localStorage.getItem('elyndor:db:v1')||'{}')[path]; }catch(e){} }
+          return {id:id,exists:!!d,data:function(){ return d; }}; }); },
         set:function(obj){ return sb.from('players').upsert({id:id,data:obj}).then(function(){}); }
       };
     },
