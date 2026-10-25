@@ -64,7 +64,9 @@
     var out=[];
     Object.keys(state).forEach(function(k){
       var arr=state[k]; if(!arr||!arr.length) return;
-      out.push({peer:k,isMe:k===myKey,presence:arr[arr.length-1]});
+      // urutan meta tidak dijamin: ambil yang paling baru lewat cap waktu _t
+      var best=arr[0]; for(var i=1;i<arr.length;i++){ if((arr[i]._t||0)>=(best._t||0)) best=arr[i]; }
+      out.push({peer:k,isMe:k===myKey,presence:best});
     });
     return out;
   }
@@ -72,18 +74,18 @@
     state=channel.presenceState();
     var l=list(); cbs.forEach(function(f){ try{ f({peers:l}); }catch(e){} });
   });
-  // track() hanya berlaku setelah join; kirim paling sering tiap 150 ms (batas pesan Realtime)
+  // track() hanya berlaku setelah join; kirim paling sering tiap 250 ms (batas pesan Realtime)
   var joined=false, pending=null, lastSend=0, timer=null;
   function flush(){
     timer=null; if(!joined||!pending) return;
     var p=pending; pending=null; lastSend=Date.now();
-    channel.track(p).catch(function(){});
+    p._t=lastSend; channel.track(p).catch(function(){});
   }
   channel.subscribe(function(st){ if(st==='SUBSCRIBED'){ joined=true; flush(); } });
   var room={
     presence:function(p){
       pending=p;
-      if(!timer) timer=setTimeout(flush,Math.max(0,150-(Date.now()-lastSend)));
+      if(!timer) timer=setTimeout(flush,Math.max(0,250-(Date.now()-lastSend)));
       return Promise.resolve();
     },
     onPeers:function(cb){ cbs.push(cb); return function(){ cbs=cbs.filter(function(x){ return x!==cb; }); }; },
