@@ -19,9 +19,9 @@
  * kasual tanpa akun/password, sama seperti mode offline). Jangan simpan data sensitif di tabel ini.
  */
 (function(){
-  var SUPABASE_URL='https://YOUR-PROJECT.supabase.co';
-  var SUPABASE_ANON_KEY='YOUR-ANON-KEY';
-  if(SUPABASE_URL.indexOf('YOUR-PROJECT')>=0){ console.warn('supabase-adapter.js belum dikonfigurasi (isi SUPABASE_URL/SUPABASE_ANON_KEY).'); return; }
+  var SUPABASE_URL='https://ecndxpzvmvhbqpybiyph.supabase.co';
+  var SUPABASE_ANON_KEY='sb_publishable_iXJF-VMdUngqYSbLHDxowA_FQExrL0h';
+  if(SUPABASE_ANON_KEY.indexOf('YOUR-')>=0){ console.warn('supabase-adapter.js belum dikonfigurasi (isi SUPABASE_URL/SUPABASE_ANON_KEY).'); return; }
   if(!window.supabase || typeof window.supabase.createClient!=='function'){ console.warn('Supabase JS library tidak termuat.'); return; }
   var sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
 
@@ -30,7 +30,10 @@
       var id=path.split('/').pop();
       return {
         get:function(){ return sb.from('players').select('data').eq('id',id).maybeSingle().then(function(r){
-          var d=r.data&&r.data.data; return {id:id,exists:!!d,data:function(){ return d; }}; }); },
+          var d=r.data&&r.data.data;
+          // belum ada di server: pakai simpanan lama mode lokal (claude-shim) supaya progres tidak hilang
+          if(!d){ try{ d=JSON.parse(localStorage.getItem('elyndor:db:v1')||'{}')[path]; }catch(e){} }
+          return {id:id,exists:!!d,data:function(){ return d; }}; }); },
         set:function(obj){ return sb.from('players').upsert({id:id,data:obj}).then(function(){}); }
       };
     },
@@ -69,9 +72,20 @@
     state=channel.presenceState();
     var l=list(); cbs.forEach(function(f){ try{ f({peers:l}); }catch(e){} });
   });
-  channel.subscribe();
+  // track() hanya berlaku setelah join; kirim paling sering tiap 150 ms (batas pesan Realtime)
+  var joined=false, pending=null, lastSend=0, timer=null;
+  function flush(){
+    timer=null; if(!joined||!pending) return;
+    var p=pending; pending=null; lastSend=Date.now();
+    channel.track(p).catch(function(){});
+  }
+  channel.subscribe(function(st){ if(st==='SUBSCRIBED'){ joined=true; flush(); } });
   var room={
-    presence:function(p){ return channel.track(p).then(function(){}); },
+    presence:function(p){
+      pending=p;
+      if(!timer) timer=setTimeout(flush,Math.max(0,150-(Date.now()-lastSend)));
+      return Promise.resolve();
+    },
     onPeers:function(cb){ cbs.push(cb); return function(){ cbs=cbs.filter(function(x){ return x!==cb; }); }; },
     peers:function(){ return list(); }
   };
