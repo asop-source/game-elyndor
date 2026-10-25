@@ -72,6 +72,7 @@
   }
   function notify(){
     state=channel.presenceState();
+    diag.peers=Object.keys(state).length;
     var l=list(); cbs.forEach(function(f){ try{ f({peers:l}); }catch(e){} });
   }
   // sync saja bisa terlewat di sebagian koneksi: dengarkan join/leave juga, dan segarkan berkala
@@ -80,14 +81,20 @@
   channel.on('presence',{event:'leave'},notify);
   setInterval(function(){ if(joined) notify(); },1500);
   // track() hanya berlaku setelah join; kirim paling sering tiap 250 ms (batas pesan Realtime)
-  var joined=false, pending=null, lastSend=0, timer=null;
+  var joined=false, pending=null, lastSend=0, timer=null, gap=250, diag={status:'connecting',track:'-',peers:0,key:myKey};
   function flush(){
     timer=null; if(!joined||!pending) return;
     var p=pending; pending=null; lastSend=Date.now();
-    p._t=lastSend; lastPayload=p; channel.track(p).catch(function(){});
+    p._t=lastSend; lastPayload=p;
+    channel.track(p).then(function(r){
+      diag.track=String(r);
+      // server menolak karena terlalu sering: perlambat kirim, jangan menyerah
+      if(r==='rate limited') gap=Math.min(2000,gap*2); else if(r==='ok' && gap>250) gap=Math.max(250,gap-50);
+    },function(e){ diag.track='error '+((e&&e.message)||e); });
   }
   var lastPayload=null;
   channel.subscribe(function(st){
+    diag.status=String(st);
     if(st==='SUBSCRIBED'){ joined=true; if(lastPayload&&!pending) pending=lastPayload; flush(); }
     else { joined=false; console.warn('Elyndor realtime: '+st); }
   });
@@ -96,12 +103,20 @@
   var room={
     presence:function(p){
       pending=p;
-      if(!timer) timer=setTimeout(flush,Math.max(0,250-(Date.now()-lastSend)));
+      if(!timer) timer=setTimeout(flush,Math.max(0,gap-(Date.now()-lastSend)));
       return Promise.resolve();
     },
     onPeers:function(cb){ cbs.push(cb); return function(){ cbs=cbs.filter(function(x){ return x!==cb; }); }; },
     peers:function(){ return list(); }
   };
+
+  // diagnosa: buka game dengan ?debug=1 untuk melihat status koneksi realtime di layar
+  if(/[?&]debug=1/.test(location.search)){
+    var box=document.createElement('div');
+    box.style.cssText='position:fixed;left:4px;bottom:4px;z-index:99999;background:rgba(0,0,0,.75);color:#9f9;font:11px/1.3 monospace;padding:4px 6px;border-radius:4px;pointer-events:none;max-width:60vw';
+    document.body.appendChild(box);
+    setInterval(function(){ box.textContent='rt:'+diag.status+' track:'+diag.track+' keys:'+diag.peers+' gap:'+gap+' me:'+diag.key; },500);
+  }
 
   window.claude={ use:function(n){ return Promise.resolve(n==='db'?db:(n==='room'?room:null)); }, standalone:true };
 })();
