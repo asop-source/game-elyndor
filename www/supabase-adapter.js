@@ -115,7 +115,7 @@
     var box=document.createElement('div');
     box.style.cssText='position:fixed;left:4px;bottom:4px;z-index:99999;background:rgba(0,0,0,.75);color:#9f9;font:11px/1.3 monospace;padding:4px 6px;border-radius:4px;pointer-events:none;max-width:60vw';
     document.body.appendChild(box);
-    setInterval(function(){ box.textContent='rt:'+diag.status+' track:'+diag.track+' keys:'+diag.peers+' gap:'+gap+' me:'+diag.key; },500);
+    setInterval(function(){ box.textContent='b15 rt:'+diag.status+' track:'+diag.track+' keys:'+diag.peers+' gap:'+gap+' me:'+diag.key; },500);
   }
 
   window.claude={ use:function(n){ return Promise.resolve(n==='db'?db:(n==='room'?room:null)); }, standalone:true };
